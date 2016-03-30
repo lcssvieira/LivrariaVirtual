@@ -1,6 +1,6 @@
 package model;
 
-public class Museu {
+public class Editora {
 	private long id;
 	private String nome, nomeResponsavel, fone, foneResponsavel, cep, endereco, numero, complemento, estado, email,
 			emailResponsavel;

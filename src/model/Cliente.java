@@ -4,7 +4,7 @@ import java.util.Date;
 
 import utils.MuseuUtils;
 
-public class Visitante {
+public class Cliente {
 	private String nome, escolaridade, cep, endereco, numero, complemento, dataFormatada, transporte, nacionalidade;
 	private long id;
 	private int genero;

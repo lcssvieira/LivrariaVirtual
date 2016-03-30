@@ -5,35 +5,28 @@ import java.util.Date;
 
 import utils.MuseuUtils;
 
-public class Ingresso {
+public class Carrinho {
 
 	private long id;
-	private Visitante cliente;
-	private Exposicao exposicao;
+	private Cliente cliente;
 	private Date data;
 	private String dataFormatada;
 	private Double valor;
 	private int desconto;
 	private TipoDesconto tipoDesconto;
-	private Venda venda;
+	private Pedido venda;
 	
-	public Venda getVenda() {
+	public Pedido getVenda() {
 		return venda;
 	}
-	public void setVenda(Venda venda) {
+	public void setVenda(Pedido venda) {
 		this.venda = venda;
 	}
-	public Visitante getCliente() {
+	public Cliente getCliente() {
 		return cliente;
 	}
-	public void setCliente(Visitante cliente) {
+	public void setCliente(Cliente cliente) {
 		this.cliente = cliente;
-	}
-	public Exposicao getExposicao() {
-		return exposicao;
-	}
-	public void setExposicao(Exposicao exposicao) {
-		this.exposicao = exposicao;
 	}
 	public Date getData() {
 		return data;

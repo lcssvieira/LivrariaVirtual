@@ -5,10 +5,9 @@ import java.util.Date;
 
 import utils.MuseuUtils;
 
-public class Emprestimo {
+public class Compra {
 	private long id;
-	private Museu museu;
-	private Obra obra;
+	private Livro obra;
 	private Date dataInicio, dataFim;
 	private String dataInicioFormatada, dataFimFormatada, descricao;
 	
@@ -32,16 +31,10 @@ public class Emprestimo {
 		this.id = id;
 	}
 	
-	public Museu getMuseu() {
-		return museu;
-	}
-	public void setMuseu(Museu museu) {
-		this.museu = museu;
-	}
-	public Obra getObra() {
+	public Livro getObra() {
 		return obra;
 	}
-	public void setObra(Obra obra) {
+	public void setObra(Livro obra) {
 		this.obra = obra;
 	}
 	public Date getDataInicio() {

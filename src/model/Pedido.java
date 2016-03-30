@@ -4,26 +4,21 @@ import java.util.ArrayList;
 import java.util.Date;
 import utils.MuseuUtils;
 
-public class Venda {
+public class Pedido {
 
 	private long id;
 	private Date data;
 	private String dataFormatada,  listaIngressos,listaIds;
 	private FormaPagamento formaPagamento;	
-	private ArrayList<Ingresso> itens;
+	private ArrayList<Livro> itens;
 	
-	public ArrayList<Ingresso> getItens() {
+	public ArrayList<Livro> getItens() {
 		return itens;
 	}
 
-	public void setItens(ArrayList<Ingresso> itens) {
+	public void setItens(ArrayList<Livro> itens) {
 		this.itens = itens;
 	}
-
-	public Venda() {
-		// TODO Auto-generated constructor stub
-	}
-	
 
 
 	public Date getData() {

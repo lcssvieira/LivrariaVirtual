@@ -6,11 +6,9 @@ import java.util.Date;
 
 import utils.MuseuUtils;
 
-public class Exposicao {
+public class Autor {
 	private long id;
 	private String nome, secao, descricao, listaObras, listaIds;
-	private Museu museu;
-	private ArrayList<Obra> obras;
 	private Date dataInicio, dataFim;
 	private String dataInicioFormatada, dataFimFormatada;
 
@@ -57,22 +55,6 @@ public class Exposicao {
 
 	public void setId(long id) {
 		this.id = id;
-	}
-
-	public ArrayList<Obra> getObras() {
-		return obras;
-	}
-
-	public void setObras(ArrayList<Obra> obras) {
-		this.obras = obras;
-	}
-
-	public Museu getMuseu() {
-		return museu;
-	}
-
-	public void setMuseu(Museu museu) {
-		this.museu = museu;
 	}
 
 	public Date getDataInicio() {

@@ -4,7 +4,7 @@ import java.util.Date;
 
 import utils.MuseuUtils;
 
-public class Obra {
+public class Livro {
 	private long id;
 	private String nome, descricao;
 	private String artista, tipo, periodo;
