@@ -1,7 +1,6 @@
 package model;
 
 public enum FormaPagamento {
-	emEspecie, 
-	cartaoDebito,
+	boletoBancario, 
 	cartaoCredito,
 }

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import model.Visitante;
 
-public class VisitanteDAO {
+public class AutorDAO {
 	private static String SELECT = "SELECT * FROM tb_visitante";
 	private static String SELECTBYPK = "SELECT * FROM tb_visitante WHERE id=?";
 	private static String INSERT = "INSERT INTO tb_visitante (nome, escolaridade,cep,endereco,numero,complemento,genero, data_nascimento, nacionalidade, meio_transporte) VALUES(?,?,?,?,?,?,?,?,?,?)";

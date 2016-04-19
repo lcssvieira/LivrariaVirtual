@@ -54,7 +54,7 @@
 								Visitante: <select id="clienteSelecionado" name="clienteSelecionado">
 									<option value="">Selecione um cliente</option>
 									<c:forEach items="${listaClientes}" var="cliente">
-										<option value="${cliente.id}">${cliente.nome}</option>
+										<option id="cliente_item" value="${cliente.id}" >${cliente.nome}</option>
 									</c:forEach>
 								</select>
 							</div>
@@ -64,7 +64,7 @@
 								Exposição: <select id="exposicaoSelecionada" name="exposicaoSelecionada">
 									<option value="">Selecione uma exposição</option>
 									<c:forEach items="${listaExposicoes}" var="exposicao">
-										<option value="${exposicao.id}">${exposicao.nome}</option>
+										<option value="${exposicao.id}" diasGratuitos = "${exposicao.diasGratuitos}" valor_ingresso="${exposicao.valor_ingresso}"  id="exposicao_item">${exposicao.nome}</option>
 									</c:forEach>
 								</select>
 							</div>
@@ -73,7 +73,7 @@
 							<div class="6u 12u(mobile)">
 								Data da visita:
 								<div class="input-group date">
-									<input type="text" class="form-control"
+									<input id="data_visita" type="text" class="form-control"
 										style="padding: 1.75em 1em 1.75em 1em;"
 										placeholder="dd/mm/aaaa" name="data"><span
 										class="input-group-addon"><i
@@ -84,14 +84,16 @@
 						<div class="row 50%">
 							<div class="6u 12u(mobile)">
 								Desconto:
-								<select id="desconto" name="desconto">
-									<c:forEach items="${listaTiposDesconto}" var="desconto">
-										<option value="${desconto.valor}">${desconto.toString()}</option>
-									</c:forEach>
+								<select id="descontoSelecionado" name="desconto">
+								<option value="">Selecione um tipo de desconto</option>
+								<option value="0" id="desconto_item">Estudante</option>
+								<option value="1" id="desconto_item">Idade</option>
 								</select>
 							</div>
 							<div class="12u">
-								<a href=# onclick ="adicionarIngressoNaVenda();">(+) Adicionar na lista de itens da venda</a>
+								<div class="12u"style="padding-top:0.7cm;">
+								<div style="color:darkblue" href=#tableIngressos onclick ="adicionarIngressoNaVenda();" type="submit" class="form-button-submit button">(+)adicionar</div>
+								</div>
 							</div>
 						</div>
 						<h3 style="margin-top: 2cm">Itens da Venda</h3>
@@ -101,6 +103,7 @@
 									name="tableIngressos" id="tableIngressos">
 									<thead>
 										<tr>
+											<th style="display:none">ID</th>
 											<th>Nome do visitante</th>
 											<th>Exposição</th>
 											<th>Data da Visita</th>
@@ -111,13 +114,14 @@
 									</thead>
 									<tbody>
 										<c:forEach items="${vendaEditar.listaIngressos}" var="ingresso">
-											<tr>
+											<tr class ="item_venda">
+												<td style="display:none"><c:out value="${ingresso.getId()}"></c:out></td>
 												<td><c:out value="${ingresso.getVisitante().getNome()}"></c:out></td>
 												<td><c:out value="${ingresso.getExposicao().getNome()}"></c:out></td>
 												<td><c:out value="${ingresso.getDataFormatada()}"></c:out></td>
 												<td><c:out value="${ingresso.getTipoDesconto()}"></c:out></td>
 												<td><c:out value="${ingresso.getValor()}"></c:out></td>
-												<td><a href="#" onclick="excluir('${ingresso.getId()}');">Excluir</a></td>
+												<td><a href="#" onclick="removerItem'${ingresso.getId()}');">Excluir</a></td>
 											</tr>
 										</c:forEach>
 									</tbody>
@@ -125,11 +129,36 @@
 							</div>
 						</div>
 						<div class="row 50%">
-							<div class="12u">
-								<button type="submit" class="form-button-submit button">Salvar</button>
+							<div class="6u 12u(mobile)">
+								<h3 
+								style="
+								margin-top: 2px;
+								font-weight: bold;" 
+								class="valorTotalTitle">Valor total: <span style="color:red">R$ 0,00</span></h3>
 							</div>
 						</div>
-					</form></article>
+						<div class="row 50%">
+	
+							<div class="6u 12u">
+								Forma de Pagamento:
+								<select id="formaPagamentoSelecionada" name="formaPagamento">
+								<option value="">Selecione uma forma de pagamento</option>
+								<option value="0" id="forma_pagto">Em espécie</option>
+								<option value="1" id="forma_pagto">Cartão de débito</option>
+								<option value="2" id="forma_pagto">Cartão de crédito</option>
+								</select>
+							</div>
+						</div>
+						
+						
+					</form>
+					<div class="row 50%">
+						<br/>
+							<div class="12u">
+								<button onclick="salvaVenda()" type="submit" class="form-button-submit button">Salvar</button>
+							</div>
+						</div>
+						</article>
 
 				</div>
 			</div>
@@ -158,10 +187,230 @@
 			todayHighlight : true
 		});
 		
-		function adicionarIngressoNaVenda(){
-			alert("TODO");
+		
+		function salvaVenda(){
+			if (validaVenda()){
+				alert("VENDA SALVA COM SUCESSO! Os ingressos serão impressos em alguns instantes.")
+				window.location.href="inicio.jsp";
+			}
+			
 		}
-
+		
+		function validaVenda(){
+			// forma de pagamento
+			var fmPagamento_selectBox = document.getElementById("formaPagamentoSelecionada");
+			var formasPagamento = $(fmPagamento_selectBox).children();
+			var formaPagamentoId = fmPagamento_selectBox.options[fmPagamento_selectBox.selectedIndex].value
+			
+			var valorTotal = converterMoneyTextEmDouble($(".valorTotalTitle").text().replace("Valor total: ",""));
+			
+			
+			if(formaPagamentoId === "" && valorTotal >0){
+				alert("ATENÇÃO: A FORMA DE PAGAMENTO NÃO FOI PREENCHIDA")
+				return false;
+			}
+				
+			
+			var item_venda = $(".item_venda");
+			if (item_venda.length < 1){
+				alert("ATENÇÃO: A VENDA NÃO POSSUI ITENS");
+				return false;
+			}
+				
+			return true;
+			
+			
+		}
+		
+		function adicionarIngressoNaVenda(){
+			// obtem id da exposicao selecionada
+			var exp_selectBox = document.getElementById("exposicaoSelecionada");
+			var exposicoes = $(exp_selectBox).children();
+			var exposicaoId = exp_selectBox.options[exp_selectBox.selectedIndex].value;	
+			
+			var cli_selectBox = document.getElementById("clienteSelecionado");
+			var clientes =$(cli_selectBox).children();	
+			var clienteId = cli_selectBox.options[cli_selectBox.selectedIndex].value;	
+			
+			var clienteNome =obtemClienteSelecionado(clienteId, clientes);
+			var exposicaoNome =obtemExposicaoSelecionada(exposicaoId, exposicoes);
+			var diasGratuitos =obtemDiasGratuitos(exposicaoId,exposicoes);
+			var valorIngresso = obtemValorIngresso(exposicaoId, exposicoes);
+			var dataVisita = $("#data_visita").val();
+			var tipoDesconto = obtemDescontoSelecionado();
+			var ingressoId = obtemId(clienteId,exposicaoId);
+			
+			if( clienteNome!=undefined && exposicaoNome!=undefined 
+					&& diasGratuitos!=undefined && valorIngresso !=undefined
+					&& dataVisita!=undefined && tipoDesconto!=undefined
+					&& clienteNome!="Selecione um cliente" 
+					&& exposicaoNome !="Selecione uma exposição" 
+					&& dataVisita != null && dataVisita!=""){
+				
+				valorIngresso = calculaValorIngresso(valorIngresso, dataVisita, diasGratuitos, tipoDesconto)
+				valorIngresso = converterEmMoneyText(valorIngresso);
+				if (tipoDesconto.trim() == "Selecione um tipo de desconto"){
+					tipoDesconto="";
+				}
+			
+				
+				if (naoAdicionado(ingressoId)){
+					var html = "";
+					html += '<tr class="item_venda">'
+							+ '<td class="item_id" style="display:none">' + ingressoId + '</td>'
+							+ '<td>' + clienteNome + '</td>'
+							+ '<td>' + exposicaoNome + '</td>' 
+							+ '<td>' + dataVisita + '</td>' 
+							+ '<td>' + tipoDesconto + '</td>'
+							+ '<td class="item_valor">' + valorIngresso + '</td>'
+							+ '<td><a style="color:darkred;" href=#tableIngressos onclick=removerItem('+ingressoId+')>Remover da lista</a>'+'</td>'
+							+ '</tr>';
+					$("#tableIngressos").append(html);
+					
+					atualizaTotal()
+					limpaCampos();
+				}
+			}	
+		}
+		
+		function atualizaTotal(){
+			var total = 0;
+			var valor = $(".item_valor");
+			if (valor != null && valor !=undefined)
+			{
+				for (var i=0;i<valor.length;i++){
+					var item = valor[i];
+					total+=converterMoneyTextEmDouble($(item).text());		
+				}
+			}
+			$(".valorTotalTitle").html("");
+			$(".valorTotalTitle").append("Valor total: <span style='color:red'>" + converterEmMoneyText(total)+"</span>");
+		}
+		
+		function naoAdicionado(ingressoId){
+			
+			var id = $(".item_id");
+			if (id === null || id ===undefined)
+				return true;
+			else
+			{
+				for (var i=0;i<id.length;i++){
+					var item = id[i];
+					if($(item).text() === ingressoId)
+						return false;
+				}
+			}
+			return true;
+		}
+	
+		function obtemId(clienteId, exposicaoId){
+			return clienteId.toString() + exposicaoId.toString();
+		}
+		
+		function removerItem(ingressoId){
+			var id = $(".item_id");
+			if (id != null && id !=undefined)
+			{
+				for (var i=0;i<id.length;i++){
+					var item = id[i];
+					if($(item).text() == ingressoId){
+						var parent = $(item).parent();
+						$(parent).remove();
+					}
+						
+				}
+			}
+			atualizaTotal();
+		}
+		
+		function limpaCampos(){
+			
+		}
+		
+		function calculaValorIngresso(valorIngresso, dataVisita, diasGratuitos, tipoDesconto){
+			
+			if (diasGratuitos.length >0){
+				for (i=0;i<diasGratuitos.length;i++){
+					var diaGratuito = diasGratuitos[i];
+					if (converteEmDiaDaSemana(dataVisita) == diaGratuito){
+						return 0;
+					}
+				
+				}
+			}
+			
+			if (tipoDesconto != "" && tipoDesconto!="Selecione um tipo de desconto"){
+				
+				if (tipoDesconto =="Idade")
+					return converterMoneyTextEmDouble(valorIngresso) * 0.0;
+				
+				return converterMoneyTextEmDouble(valorIngresso) * 0.5;
+			}
+			
+			return valorIngresso;
+		}
+		
+		function converteEmDiaDaSemana(data){
+			// conveter data em dia da semana; retornar o número que representa o dia da semana, sendo domingo = 1 e sabado = 7
+			return 0;
+		}
+		
+		function converterMoneyTextEmDouble(text){
+			if (text != undefined && text.trim() != null){
+				var cleanText = text.replace("R$ ","").replace(",",".");
+				return parseFloat(cleanText);
+			}
+			return 0;
+			
+		}
+		
+		function converterEmMoneyText(valor){
+			
+			var text = (valor < 1 ?"0":"") + Math.floor(valor*100);
+			text="R$ " + text;
+			var result= text.substr(0,text.length-2) + "," + text.substr(-2);
+			if (result ==="R$ ,00")
+				result = "R$ 0,00";
+			
+			return result;
+		}
+		
+		function obtemValorIngresso(id, exposicoes){
+			for (var i =0; i < exposicoes.length; i++){
+				if ($(exposicoes[i]).attr('value') === id)
+					return $(exposicoes[i]).attr('valor_ingresso');
+			}
+		}
+		
+		function obtemDiasGratuitos(id, exposicoes){
+			for (var i =0; i < exposicoes.length; i++){
+				if ($(exposicoes[i]).attr('value') === id)
+					return $(exposicoes[i]).attr('diasGratuitos');
+			}
+		}
+		function obtemExposicaoSelecionada(id, exposicoes){
+			for (var i =0; i < exposicoes.length; i++){
+				if ($(exposicoes[i]).attr('value') === id)
+					return exposicoes[i].text;
+			}
+		}
+		function obtemDescontoSelecionado(){
+			var selectBox = document.getElementById("descontoSelecionado");
+			var descontos = $(selectBox).children();
+			var selectedId = selectBox.options[selectBox.selectedIndex].value;	
+			for (var i =0; i < descontos.length; i++){
+				if ($(descontos[i]).attr('value') === selectedId)
+					return descontos[i].text;
+			}
+		}
+		function obtemClienteSelecionado(id, clientes){
+			for (var i =0; i < clientes.length; i++){
+				if ($(clientes[i]).attr('value') == id){
+					return clientes[i].text;
+				}
+					
+			}
+		}
 		function excluir(id) {
 			var index = ingressos.indexOf(id);
 			if (index > -1) {

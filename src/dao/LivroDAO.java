@@ -6,9 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import model.Obra;
+import model.Livro;
 
-public class ObraDAO {
+public class LivroDAO {
 	private static String SELECT = "SELECT * FROM tb_obra";
 	private static String SELECT_EMPRESTIMO = "SELECT * FROM tb_obra WHERE fl_emprestado =  ? ";
 	private static String SELECTBYPK = "SELECT * FROM tb_obra WHERE id=?";
@@ -17,7 +17,7 @@ public class ObraDAO {
 	private static String UPDATE = "UPDATE tb_obra SET nome = ?, descricao = ?, tipo = ?, data =?, periodo=?, artista =?, valor_estimado = ? where id = ?";
 	private static String UPDATE_EMPRESTIMO = "UPDATE tb_obra SET fl_emprestado = ? where id = ?";
 
-	public boolean inserir(Obra obra) throws Exception {
+	public boolean inserir(Livro obra) throws Exception {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
@@ -41,13 +41,13 @@ public class ObraDAO {
 		}
 	}
 
-	public ArrayList<Obra> carregaLista() throws Exception {
+	public ArrayList<Livro> carregaLista() throws Exception {
 		Connection conn = DaoUtils.getConnection();
 		PreparedStatement ps = conn.prepareStatement(SELECT);
 		ResultSet rs = ps.executeQuery();
-		ArrayList<Obra> obras = new ArrayList<>();
+		ArrayList<Livro> obras = new ArrayList<>();
 		while (rs.next()) {
-			Obra obra = new Obra();
+			Livro obra = new Livro();
 			obra.setId(rs.getInt("id"));
 			obra.setArtista(rs.getString("artista"));
 			if (rs.getDate("data") != null)
@@ -78,18 +78,18 @@ public class ObraDAO {
 		}
 	}
 
-	public Obra selectByPk(int id) {
+	public Livro selectByPk(int id) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		Obra obra = null;
+		Livro obra = null;
 		try {
 			conn = DaoUtils.getConnection();
 			ps = conn.prepareStatement(SELECTBYPK);
 			ps.setInt(1, id);
 			rs = ps.executeQuery();
 			if (rs.next()) {
-				obra = new Obra();
+				obra = new Livro();
 				obra.setId(id);
 				obra.setArtista(rs.getString("artista"));
 				if (rs.getDate("data") != null)
@@ -108,7 +108,7 @@ public class ObraDAO {
 		return obra;
 	}
 
-	public boolean atualizar(Obra obra) {
+	public boolean atualizar(Livro obra) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
@@ -133,14 +133,14 @@ public class ObraDAO {
 		}
 	}
 
-	public ArrayList<Obra> carregaListaEmprestimo(int flEmprestimo) throws SQLException {
+	public ArrayList<Livro> carregaListaEmprestimo(int flEmprestimo) throws SQLException {
 		Connection conn = DaoUtils.getConnection();
 		PreparedStatement ps = conn.prepareStatement(SELECT_EMPRESTIMO);
 		ps.setInt(1, flEmprestimo);
 		ResultSet rs = ps.executeQuery();
-		ArrayList<Obra> obras = new ArrayList<>();
+		ArrayList<Livro> obras = new ArrayList<>();
 		while (rs.next()) {
-			Obra obra = new Obra();
+			Livro obra = new Livro();
 			obra.setId(rs.getInt("id"));
 			obra.setArtista(rs.getString("artista"));
 			if (rs.getDate("data") != null)
@@ -157,7 +157,7 @@ public class ObraDAO {
 		return obras;
 	}
 
-	public void atualizarEmprestado(Obra obra, int flEmprestado) {
+	public void atualizarEmprestado(Livro obra, int flEmprestado) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {

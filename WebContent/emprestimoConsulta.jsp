@@ -30,11 +30,11 @@
 					<table class="table table-condensed table-hover  table-striped">
 						<thead>
 							<tr>
-								<th>ID</th>
-								<th>Data início</th>
-								<th>Data fim</th>
-								<th>Obra</th>
-								<th>Museu</th>
+								<th style="display:none">ID</th>
+								<th>Data do emprestimo</th>
+								<th>Data prevista p/ devolução</th>
+								<th>Obra emprestada</th>
+								<th>Museu solicitante</th>
 								<th colspan="2">Ações</th>
 							</tr>
 						</thead>
@@ -43,7 +43,7 @@
 							<c:forEach items="${requestScope.listaEmprestimos}"
 								var="emprestimo">
 								<tr>
-									<td><c:out value="${emprestimo.id}"></c:out></td>
+									<td style="display:none"><c:out value="${emprestimo.id}"></c:out></td>
 									<td><c:out value="${emprestimo.dataInicioFormatada}"></c:out></td>
 									<td><c:out value="${emprestimo.dataFimFormatada}"></c:out></td>
 									<td><c:out value="${emprestimo.obra.nome}"></c:out></td>

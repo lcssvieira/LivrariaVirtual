@@ -5,15 +5,15 @@ import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import dao.MuseuDAO;
-import model.Museu;
+import dao.EditoraDAO;
+import model.Editora;
 
-public class MuseuControl {
-	MuseuDAO dao;
-	ArrayList<Museu> museus = new ArrayList<>();
+public class EditoraControl {
+	EditoraDAO dao;
+	ArrayList<Editora> museus = new ArrayList<>();
 
-	public MuseuControl() {
-		dao = new MuseuDAO();
+	public EditoraControl() {
+		dao = new EditoraDAO();
 	}
 
 	public void cadastrar(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -21,7 +21,7 @@ public class MuseuControl {
 			alterar(req, res);
 			return;
 		}
-		Museu vo = loadParameters(req);
+		Editora vo = loadParameters(req);
 		boolean cadastrado = dao.cadastrar(vo);
 		req.setAttribute("adicionado", cadastrado);
 		String paginaRetorno = "museu.jsp";
@@ -39,8 +39,8 @@ public class MuseuControl {
 		req.getRequestDispatcher("museuConsulta.jsp").forward(req, res);
 	}
 
-	private Museu loadParameters(HttpServletRequest req) {
-		Museu vo = new Museu();
+	private Editora loadParameters(HttpServletRequest req) {
+		Editora vo = new Editora();
 
 		vo.setNome(req.getParameter("nome"));
 		vo.setNomeResponsavel(req.getParameter("nomeResponsavel"));
@@ -65,7 +65,7 @@ public class MuseuControl {
 	public void editar(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		int id = Integer.parseInt(req.getParameter("id"));
 		if (id != 0) {
-			Museu museu = dao.selectByPk(id);
+			Editora museu = dao.selectByPk(id);
 			if (museu != null) {
 				req.setAttribute("museuEditar", museu);
 				req.getRequestDispatcher("museu.jsp").forward(req, res);
@@ -74,7 +74,7 @@ public class MuseuControl {
 	}
 
 	public void alterar(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		Museu vo = loadParameters(req);
+		Editora vo = loadParameters(req);
 		vo.setId(Integer.parseInt(req.getParameter("id")));
 		boolean alterado = dao.alterar(vo);
 		String pageReturn = "museu.jsp";

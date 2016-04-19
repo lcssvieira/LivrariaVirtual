@@ -5,11 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
-import model.Exposicao;
 import model.FormaPagamento;
-import model.Venda;
+import model.Pedido;
 
-public class VendaDAO {
+public class PedidoDAO {
 
 	private static String SELECT = "SELECT * FROM tb_venda";
 	private static String SELECTBYPK = "SELECT * FROM tb_venda WHERE id=?";
@@ -17,7 +16,7 @@ public class VendaDAO {
 	private static String DELETE = "DELETE FROM tb_venda where id = ?";
 	private static String UPDATE = "UPDATE tb_venda SET data = ?, forma_pagamento = ? where id = ?";
 	private static String DELETE_INGRESSOS = "DELETE FROM tb_ingresso WHERE id_venda = ?";
-	public boolean inserir(Venda venda){
+	public boolean inserir(Pedido venda){
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
@@ -33,7 +32,7 @@ public class VendaDAO {
 		}
 	}
 	
-	public boolean atualizar(Venda venda) {
+	public boolean atualizar(Pedido venda) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
@@ -65,13 +64,13 @@ public class VendaDAO {
 		}
 	}	
 	
-	public ArrayList<Venda> carregaLista() throws Exception {
+	public ArrayList<Pedido> carregaLista() throws Exception {
 		Connection conn = DaoUtils.getConnection();
 		PreparedStatement ps = conn.prepareStatement(SELECT);
 		ResultSet rs = ps.executeQuery();
-		ArrayList<Venda> vendas = new ArrayList<>();
+		ArrayList<Pedido> vendas = new ArrayList<>();
 		while (rs.next()) {
-			Venda venda = new Venda();
+			Pedido venda = new Pedido();
 			venda.setId(rs.getLong("id"));
 			venda.setData(new java.util.Date(rs.getDate("data").getTime()));
 			venda.setFormaPagamento(FormaPagamento.values()[rs.getInt("forma_pagamento")]);
@@ -82,18 +81,18 @@ public class VendaDAO {
 		return vendas;
 	}
 	
-	public Venda selectByPk(int id) {
+	public Pedido selectByPk(int id) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		Venda venda = null;
+		Pedido venda = null;
 		try {
 			conn = DaoUtils.getConnection();
 			ps = conn.prepareStatement(SELECTBYPK);
 			ps.setInt(1, id);
 			rs = ps.executeQuery();
 			if (rs.next()) {
-				venda = new Venda();
+				venda = new Pedido();
 				venda.setId(id);
 				venda.setData(new java.util.Date(rs.getDate("data").getTime()));
 				venda.setFormaPagamento(FormaPagamento.values()[rs.getInt("forma_pagamento")]);
@@ -106,7 +105,7 @@ public class VendaDAO {
 		return venda;
 	}
 	
-	public void deletarIngressos(Venda venda){
+	public void deletarIngressos(Pedido venda){
 		Connection conn = null;
 		PreparedStatement ps = null;
 		

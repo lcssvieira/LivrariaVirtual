@@ -9,24 +9,25 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 
 import dao.ExposicaoDAO;
-import dao.MuseuDAO;
-import dao.ObraDAO;
+import dao.EditoraDAO;
+import dao.LivroDAO;
 import model.Exposicao;
-import model.Museu;
-import model.Obra;
+import model.Editora;
+import model.Livro;
 import utils.MuseuUtils;
 
-public class ExposicaoControl {
+public class CategoriaLivroControl {
 	ExposicaoDAO exposicaoDao;
-	ObraDAO obraDAO;
+	LivroDAO livroDAO;
 	ExposicaoDAO dao;
 	ArrayList<Exposicao> exposicoes = new ArrayList<>();
-	ArrayList<Obra> obras = new ArrayList<>();
+	ArrayList<Livro> obras = new ArrayList<>();
+	ArrayList<Editora> museus = new ArrayList<>();
 
-	public ExposicaoControl() {
+	public CategoriaLivroControl() {
 		exposicaoDao = new ExposicaoDAO();
 		dao = new ExposicaoDAO();
-		obraDAO = new ObraDAO();
+		livroDAO = new LivroDAO();
 	}
 
 	public void cadastrar(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -53,9 +54,9 @@ public class ExposicaoControl {
 
 	private Exposicao loadParameters(HttpServletRequest req) throws ParseException {
 		Exposicao exposicao = new Exposicao();
-		MuseuDAO museuDAO = new MuseuDAO();
-		ObraDAO obrasDAO = new ObraDAO();
-		Museu museu = museuDAO.selectByPk(Integer.parseInt(req.getParameter("museu")));
+		EditoraDAO museuDAO = new EditoraDAO();
+		LivroDAO obrasDAO = new LivroDAO();
+		Editora museu = museuDAO.selectByPk(Integer.parseInt(req.getParameter("museuSelecionado")));
 		exposicao.setMuseu(museu);
 		exposicao.setObras(obras);
 		String listaObras = req.getParameter("obrasId");
@@ -70,9 +71,9 @@ public class ExposicaoControl {
 		} catch (Exception e) {
 			e.getMessage();
 		}
-		ArrayList<Obra> obras = new ArrayList<Obra>();
+		ArrayList<Livro> obras = new ArrayList<Livro>();
 		for (int id : ids) {
-			Obra o = obrasDAO.selectByPk(id);
+			Livro o = obrasDAO.selectByPk(id);
 			if (o != null)
 				obras.add(o);
 		}
@@ -82,9 +83,15 @@ public class ExposicaoControl {
 		exposicao.setDataInicio(MuseuUtils.converteStringEmData(req.getParameter("dataInicio")));
 		exposicao.setDataFim(MuseuUtils.converteStringEmData(req.getParameter("dataFim")));
 		exposicao.setDescricao(req.getParameter("descricao"));
+		exposicao.setSecao(req.getParameter("secao"));
+		if (req.getParameter("valor_ingresso")!= null){
+			Double valor = MuseuUtils.converteMoneyTextEmDouble(req.getParameter("valor_ingresso"));
+			exposicao.setValor_ingresso(valor);
+		}
+			
 		return exposicao;
 	}
-
+	
 	public void deletar(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		int id = Integer.parseInt(req.getParameter("id"));
 		if (id != 0) {
@@ -100,8 +107,14 @@ public class ExposicaoControl {
 		if (id != 0) {
 			Exposicao exposicao = dao.selectByPk(id);
 			if (exposicao != null) {
+				EditoraDAO museuDAO = new EditoraDAO();
+				museus = museuDAO.carregaLista();
+				req.setAttribute("listaMuseus", museus);
+				LivroDAO dao = new LivroDAO();
+				obras = dao.carregaLista();
+				req.setAttribute("listaObras", obras);
+				
 				req.setAttribute("exposicaoEditar", exposicao);
-				req.setAttribute("listaObras", exposicao.getObras());
 				req.getRequestDispatcher("exposicao.jsp").forward(req, res);
 			}
 		}
@@ -121,19 +134,38 @@ public class ExposicaoControl {
 	}
 
 	public void adicionarNaList(int obraId) {
-		this.obras.add(obraDAO.selectByPk(obraId));
+		this.obras.add(livroDAO.selectByPk(obraId));
 	}
 
-	public void listarObras(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		ObraDAO dao = new ObraDAO();
+	public void listarDados(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		LivroDAO dao = new LivroDAO();
 		obras = dao.carregaLista();
 		req.setAttribute("listaObras", obras);
+		
+		EditoraDAO museuDAO = new EditoraDAO();
+		museus = museuDAO.carregaLista();
+		req.setAttribute("listaMuseus", museus);
+	
 		req.setAttribute("exposicaoEditar", new Exposicao());
 		req.getRequestDispatcher("exposicao.jsp").forward(req, res);
 	}
 
 	public String getObraById(HttpServletRequest req, HttpServletResponse res) throws NumberFormatException, Exception {
-		String json = new Gson().toJson(new ObrasControl().selectById(Integer.parseInt(req.getParameter("id"))));
+		String json = new Gson().toJson(new LivroControl().selectById(Integer.parseInt(req.getParameter("id"))));
+
+		res.setContentType("application/json");
+		res.setCharacterEncoding("UTF-8");
+		res.getWriter().print(json);
+
+		return json;
+	}
+	
+	public Exposicao selectById(int id) throws Exception {
+		return dao.selectByPk(id);
+	}
+	
+	public String getExposicaoById(HttpServletRequest req, HttpServletResponse res) throws NumberFormatException, Exception {
+		String json = new Gson().toJson(this.selectById(Integer.parseInt(req.getParameter("id"))));
 
 		res.setContentType("application/json");
 		res.setCharacterEncoding("UTF-8");

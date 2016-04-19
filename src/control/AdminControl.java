@@ -19,7 +19,7 @@ public class AdminControl {
 		// se encontra na base um usuario com login e senha, envia pra tela
 		// principal
 		if (dao.login(new Usuario(username, password)) != null)
-			req.getRequestDispatcher("inicio.html").forward(req, res);
+			req.getRequestDispatcher("inicio.jsp").forward(req, res);
 		else {
 			req.setAttribute("erro", "Usuário inválido, por favor verifique login e senha.");
 			req.getRequestDispatcher("login.jsp").forward(req, res);

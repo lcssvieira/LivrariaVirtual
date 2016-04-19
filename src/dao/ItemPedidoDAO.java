@@ -5,11 +5,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
-import model.Ingresso;
+import model.ItemPedido;
 import model.TipoDesconto;
 
 
-public class IngressoDAO {
+public class ItemPedidoDAO {
 	
 	private static String SELECT = "SELECT * FROM tb_ingresso";
 	private static String SELECTBYPK = "SELECT * FROM tb_ingresso WHERE id=?";
@@ -17,17 +17,17 @@ public class IngressoDAO {
 	private static String DELETE = "DELETE FROM tb_ingresso where id = ?";
 	private static String UPDATE = "UPDATE tb_ingresso SET id_venda = ?, id_cliente = ?, id_exposicao = ?, data =?, valor=?, tipo_desconto =?, desconto = ? where id = ?";
 
-	private VisitanteDAO visitanteDAO;
-	private VendaDAO vendaDAO;
+	private ClienteDAO visitanteDAO;
+	private PedidoDAO pedidoDAO;
 	private ExposicaoDAO exposicaoDAO;
 	
-	public IngressoDAO(){
-		this.visitanteDAO = new VisitanteDAO();
-		this.vendaDAO = new VendaDAO();
+	public ItemPedidoDAO(){
+		this.visitanteDAO = new ClienteDAO();
+		this.pedidoDAO = new PedidoDAO();
 		this.exposicaoDAO = new ExposicaoDAO();
 	}
 	
-	public boolean inserir(Ingresso ingresso){
+	public boolean inserir(ItemPedido ingresso){
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
@@ -64,7 +64,7 @@ public class IngressoDAO {
 		
 	}
 	
-	public boolean alterar(Ingresso ingresso) {
+	public boolean alterar(ItemPedido ingresso) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
@@ -86,18 +86,18 @@ public class IngressoDAO {
 		}
 	}
 	
-	public Ingresso selectByPK(int id){
+	public ItemPedido selectByPK(int id){
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
 			ps = DaoUtils.getConnection().prepareStatement(SELECTBYPK);
 			ps.setInt(1, id);
 			ResultSet rs = ps.executeQuery();
-			Ingresso i = null;
+			ItemPedido i = null;
 			while (rs.next()) {
-				i = new Ingresso();
+				i = new ItemPedido();
 				i.setId(rs.getInt("id"));
-				i.setVenda(vendaDAO.selectByPk(rs.getInt("id_venda")));
+				i.setVenda(pedidoDAO.selectByPk(rs.getInt("id_venda")));
 				i.setCliente(visitanteDAO.selectByPk(rs.getInt("id_cliente")));
 				i.setExposicao(exposicaoDAO.selectByPk(rs.getInt("id_exposicao")));
 				i.setData(rs.getDate("data"));
@@ -116,20 +116,20 @@ public class IngressoDAO {
 		}
 	}
 	
-	public ArrayList<Ingresso> carregaLista() {
+	public ArrayList<ItemPedido> carregaLista() {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		
 		try {
 			ps = DaoUtils.getConnection().prepareStatement(SELECT);
 			ResultSet rs = ps.executeQuery();
-			ArrayList<Ingresso> ingressos = null;
+			ArrayList<ItemPedido> ingressos = null;
 			while (rs.next()) {
 				if (ingressos == null)
 					ingressos = new ArrayList<>();
-				Ingresso i = new Ingresso();
+				ItemPedido i = new ItemPedido();
 				i.setId(rs.getInt("id"));
-				i.setVenda(vendaDAO.selectByPk(rs.getInt("id_venda")));
+				i.setVenda(pedidoDAO.selectByPk(rs.getInt("id_venda")));
 				i.setCliente(visitanteDAO.selectByPk(rs.getInt("id_cliente")));
 				i.setExposicao(exposicaoDAO.selectByPk(rs.getInt("id_exposicao")));
 				i.setData(rs.getDate("data"));

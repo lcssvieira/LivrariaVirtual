@@ -1,7 +1,6 @@
 package control;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,18 +12,18 @@ import model.*;
 import utils.MuseuUtils;
 
 
-public class VendaControl {
-	VendaDAO vendaDAO;
-	IngressoDAO ingressoDAO;
+public class PedidoControl {
+	PedidoDAO pedidoDAO;
+	ItemPedidoDAO ingressoDAO;
 	ArrayList<Visitante> visitantes = new ArrayList<>() ;
 	ArrayList<Exposicao> exposicoes = new ArrayList<>();
-	ArrayList<Ingresso> ingressos = new ArrayList<>();
-	ArrayList<Venda> vendas = new ArrayList<>();
+	ArrayList<ItemPedido> ingressos = new ArrayList<>();
+	ArrayList<Pedido> vendas = new ArrayList<>();
 	
-	public VendaControl(){
+	public PedidoControl(){
 		
-		vendaDAO = new VendaDAO();
-		ingressoDAO = new IngressoDAO();
+		pedidoDAO = new PedidoDAO();
+		ingressoDAO = new ItemPedidoDAO();
 		visitantes = new ArrayList<>();
 		exposicoes = new ArrayList<>();
 		ingressos = new ArrayList<>();
@@ -33,25 +32,27 @@ public class VendaControl {
 	
 	public void cadastrar(HttpServletRequest req, HttpServletResponse res) throws Exception {
 
+		req.getRequestDispatcher("inicio.html").forward(req, res);
+		
 		if (Boolean.parseBoolean(req.getParameter("alterar"))) {
 			atualizar(req, res);
 			return;
 		}
-		Venda vo = carregaParametros(req);
-		boolean cadastrado = vendaDAO.inserir(vo);
+		Pedido vo = carregaParametros(req);
+		boolean cadastrado = pedidoDAO.inserir(vo);
 		req.setAttribute("adicionado", cadastrado);
 		if (cadastrado)
 			listarVendas(req, res);
 		else {
-			req.setAttribute("exposicaoEditar", vo);
-			req.getRequestDispatcher("exposicao.jsp").forward(req, res);
+			req.setAttribute("vendaEditar", vo);
+			req.getRequestDispatcher("vendas.jsp").forward(req, res);
 		}
 	}
 	
-	private Venda carregaParametros(HttpServletRequest req) {
+	private Pedido carregaParametros(HttpServletRequest req) {
 		try {
 		
-			Venda venda = new Venda();
+			Pedido venda = new Pedido();
 			venda.setData(MuseuUtils.converteStringEmData(req.getParameter("data")));
 			
 			if (req.getParameter("forma_pagamento") != null)
@@ -72,13 +73,13 @@ public class VendaControl {
 			} catch (Exception e) {
 				e.getMessage();
 			}
-			ArrayList<Ingresso> ingressos = new ArrayList<Ingresso>();
+			ArrayList<ItemPedido> ingressos = new ArrayList<ItemPedido>();
 			for (int id : ids) {
-				Ingresso o = ingressoDAO.selectByPK(id);
+				ItemPedido o = ingressoDAO.selectByPK(id);
 				if (o != null)
 					ingressos.add(o);
 			}
-			vendaDAO.deletarIngressos(venda);
+			pedidoDAO.deletarIngressos(venda);
 			venda.setItens(ingressos);
 			venda.setData(MuseuUtils.converteStringEmData(req.getParameter("data")));
 			if(req.getParameter("forma_pagamento") !=null)
@@ -93,9 +94,9 @@ public class VendaControl {
 	
 	public void atualizar(HttpServletRequest req, HttpServletResponse res) throws Exception {
 
-		Venda vo = carregaParametros(req);
+		Pedido vo = carregaParametros(req);
 		vo.setId(Integer.parseInt(req.getParameter("id")));
-		boolean alterado = vendaDAO.atualizar(vo);
+		boolean alterado = pedidoDAO.atualizar(vo);
 		String pageReturn = "venda.jsp";
 		if (alterado) {
 			listarDados(req, res);
@@ -108,7 +109,7 @@ public class VendaControl {
 	public void editar(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		int id = Integer.parseInt(req.getParameter("id"));
 		if (id != 0) {
-			Venda venda = vendaDAO.selectByPk(id);
+			Pedido venda = pedidoDAO.selectByPk(id);
 			if (venda != null) {
 				req.setAttribute("vendaEditar", venda);
 				req.setAttribute("listaIngressos", venda.getItens());
@@ -123,23 +124,21 @@ public class VendaControl {
 		exposicoes = exposicaoDAO.carregaLista();
 		req.setAttribute("listaExposicoes", exposicoes);
 		
-		VisitanteDAO visitanteDAO = new VisitanteDAO();
+		ClienteDAO visitanteDAO = new ClienteDAO();
 		visitantes = visitanteDAO.carregaLista();
 		req.setAttribute("listaClientes", visitantes);
 		
-		IngressoDAO ingressoDAO = new IngressoDAO();
+		ItemPedidoDAO ingressoDAO = new ItemPedidoDAO();
 		ingressos = ingressoDAO.carregaLista();
 		req.setAttribute("listaIngressos", ingressos);
 		
-		req.setAttribute("listaTiposDesconto", Arrays.asList(TipoDesconto.values()));
-		
-		req.setAttribute("vendaEditar", new Venda());
+		req.setAttribute("vendaEditar", new Pedido());
 		req.getRequestDispatcher("vendas.jsp").forward(req, res);
 	}
 	
 	
 	public void listarVendas(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		vendas = vendaDAO.carregaLista();
+		vendas = pedidoDAO.carregaLista();
 		req.setAttribute("listaVendas", vendas);
 		req.getRequestDispatcher("vendaConsulta.jsp").forward(req, res);
 	}
@@ -150,7 +149,7 @@ public class VendaControl {
 	}
 	
 	public String getOIngressoById(HttpServletRequest req, HttpServletResponse res) throws NumberFormatException, Exception {
-		String json = new Gson().toJson(new IngressoControl().selectById(Integer.parseInt(req.getParameter("id"))));
+		String json = new Gson().toJson(new ItemPedidoControl().selectById(Integer.parseInt(req.getParameter("id"))));
 
 		res.setContentType("application/json");
 		res.setCharacterEncoding("UTF-8");

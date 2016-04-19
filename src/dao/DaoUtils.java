@@ -10,7 +10,7 @@ public class DaoUtils {
 	static Connection getConnection() {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			return DriverManager.getConnection("jdbc:mysql://localhost:3306/db_museu", "root", "root");
+			return DriverManager.getConnection("jdbc:mysql://localhost:3306/db_livraria", "root", "root");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

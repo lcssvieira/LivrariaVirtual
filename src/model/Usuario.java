@@ -1,11 +1,11 @@
 package model;
 
 public class Usuario {
-	private String username;
-	private String senha;
 	private long id;
 	private String nome;
-
+	private String username;
+	private String senha;
+	
 	public Usuario(String username, String password) {
 		this.username = username;
 		this.senha = password;
@@ -28,14 +28,6 @@ public class Usuario {
 
 	public void setUsername(String username) {
 		this.username = username;
-	}
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
 	}
 
 	public String getNome() {

@@ -9,6 +9,8 @@
 <!--[if lte IE 8]><script src="../assets/js/ie/html5shiv.js"></script><![endif]-->
 <link rel="stylesheet" href="./assets/css/bootstrap.css" />
 <link rel="stylesheet" href="./assets/css/main.css" />
+<link rel="stylesheet" href="./assets/css/bootstrap-datepicker3.min.css" />
+<link rel="stylesheet" href="./assets/css/bootstrap-select.css" />
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
 </head>
@@ -28,7 +30,7 @@
 					<h3>Novo Empréstimo</h3>
 					<c:if test="${not empty inserido}">
 						<div class="alert alert-danger" role="alert">
-							<strong>Erro!</strong>Ocorreu um erro ao inserir os dados.
+							<strong>Erro! </strong>Ocorreu um erro ao inserir os dados.
 							Insira-os novamente.
 						</div>
 					</c:if>
@@ -42,8 +44,8 @@
 						</c:if>
 						<div class="row 50%">
 							<div class="6u 12u(mobile)">
-								Museu: <select id="museu" name="museu"
-								>
+								Museu solicitante: <select id="museu" name="museu">
+									<option value="">Selecione um museu</option>
 									<c:forEach items="${listaMuseus}" var="museu">
 										<option value="${museu.id}">${museu.nome}</option>
 									</c:forEach>
@@ -51,6 +53,7 @@
 							</div>
 							<div class="6u 12u(mobile)">
 								Obra: <select id="obra" name="obra">
+								 <option value="">Selecione uma obra</option>
 									<c:forEach items="${listaObras}" var="obra">
 										<option value="${obra.id}">${obra.nome}</option>
 									</c:forEach>
@@ -59,14 +62,28 @@
 						</div>
 						<div class="row 50%">
 							<div class="6u 12u(mobile)">
-								Data de início: <input name="dataInicio"
-									placeholder="Data em dd/mm/aaaa" type="text"
-									value="<c:out value="${emprestimoEditar.dataInicioFormatada}"/>" />
+								Data do emprestimo:
+									<div class="input-group date">
+									<input id="dataInicio" type="text" class="form-control"
+										style="padding: 1.75em 1em 1.75em 1em;"
+										placeholder="dd/mm/aaaa" name="data"
+										value="<c:out value="${emprestimoEditar.dataInicioFormatada}"/>"
+										><span
+										class="input-group-addon"><i
+										class="glyphicon glyphicon-th"></i></span>
+									</div>
 							</div>
 							<div class="6u 12u(mobile)">
-								Data fim: <input name="dataFim"
-									placeholder="Data em dd/mm/aaaa" type="text"
-									value="<c:out value="${emprestimoEditar.dataFimFormatada}"/>" />
+								Data prevista p/ devolução:
+									<div class="input-group date">
+									<input id="dataFim" type="text" class="form-control"
+										style="padding: 1.75em 1em 1.75em 1em;"
+										placeholder="dd/mm/aaaa" name="data"
+										value="<c:out value="${emprestimoEditar.dataFimFormatada}"/>"
+										><span
+										class="input-group-addon"><i
+										class="glyphicon glyphicon-th"></i></span>
+								</div>
 							</div>
 						</div>
 						<div class="row 50%">
@@ -99,5 +116,15 @@
 	<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
 	<script src="./assets/js/main.js"></script>
 	<script src="./assets/js/bootstrap.min.js"></script>
+	<script src="./assets/js/bootstrap-datepicker.min.js"></script>
+	<script src="./assets/js/locales/bootstrap-datepicker.pt-BR.min.js"></script>
+	<script type="text/javascript">
+	
+	$('.input-group.date').datepicker({
+		format : "dd/mm/yyyy",
+		language : "pt-BR",
+		todayHighlight : true
+	});
+	</script>
 </body>
 </html>

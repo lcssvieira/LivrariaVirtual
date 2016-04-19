@@ -5,9 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
-import model.Museu;
+import model.Editora;
 
-public class MuseuDAO {
+public class EditoraDAO {
 	private static final String CADASTRAR = "INSERT INTO tb_museu (nome, nome_responsavel, fone, fone_responsavel,"
 			+ " cep, endereco, numero,complemento, estado,email, email_responsavel) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 	private static final String CONSULTA_BASICA = "SELECT id, nome, nome_responsavel, fone, fone_responsavel FROM tb_museu";
@@ -16,7 +16,7 @@ public class MuseuDAO {
 	private static final String ALTERAR = "UPDATE tb_museu SET nome = ?, nome_responsavel=?, fone=?, fone_responsavel=?, cep=?, "
 			+ "endereco=?, numero =?, complemento = ?, estado =?, email=  ?, email_responsavel=? WHERE id=?";
 
-	public boolean cadastrar(Museu vo) {
+	public boolean cadastrar(Editora vo) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
@@ -42,17 +42,17 @@ public class MuseuDAO {
 		}
 	}
 
-	public ArrayList<Museu> carregaLista() {
+	public ArrayList<Editora> carregaLista() {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
 			ps = DaoUtils.getConnection().prepareStatement(CONSULTA_BASICA);
 			ResultSet rs = ps.executeQuery();
-			ArrayList<Museu> museus = null;
+			ArrayList<Editora> museus = null;
 			while (rs.next()) {
 				if (museus == null)
 					museus = new ArrayList<>();
-				Museu m = new Museu();
+				Editora m = new Editora();
 				m.setId(rs.getInt("id"));
 				m.setNome(rs.getString("nome"));
 				m.setNomeResponsavel(rs.getString("nome_responsavel"));
@@ -85,16 +85,16 @@ public class MuseuDAO {
 		}
 	}
 
-	public Museu selectByPk(int id) {
+	public Editora selectByPk(int id) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
 			ps = DaoUtils.getConnection().prepareStatement(SELECT_BY_ID);
 			ps.setInt(1, id);
 			ResultSet rs = ps.executeQuery();
-			Museu museu = null;
+			Editora museu = null;
 			while (rs.next()) {
-				museu = new Museu();
+				museu = new Editora();
 				museu.setId(rs.getInt("id"));
 				museu.setNome(rs.getString("nome"));
 				museu.setNomeResponsavel(rs.getString("nome_responsavel"));
@@ -118,7 +118,7 @@ public class MuseuDAO {
 		}
 	}
 
-	public boolean alterar(Museu vo) {
+	public boolean alterar(Editora vo) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {

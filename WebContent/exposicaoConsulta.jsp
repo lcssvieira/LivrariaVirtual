@@ -16,7 +16,6 @@
 	<div id="page-wrapper">
 
 		<jsp:include page="menu.jsp" />
-
 		<!-- Main -->
 		<div id="main-wrapper">
 			<div id="main" class="container">

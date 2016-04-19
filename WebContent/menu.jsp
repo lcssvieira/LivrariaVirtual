@@ -47,7 +47,7 @@
 
 				<li><a class="fa fa-paint-brush"><span>Exposições</span></a>
 					<ul>
-						<li><a href="ServletMuseu.do?classe=ExposicaoControl&metodo=listarObras">Cadastrar</a></li>
+						<li><a href="ServletMuseu.do?classe=ExposicaoControl&metodo=listarDados">Cadastrar</a></li>
 						<li><a
 							href="ServletMuseu.do?classe=ExposicaoControl&metodo=listarExposicoes">Consultar</a></li>
 					</ul></li>

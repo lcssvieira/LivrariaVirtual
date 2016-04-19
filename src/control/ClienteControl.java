@@ -5,12 +5,12 @@ import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import dao.VisitanteDAO;
+import dao.ClienteDAO;
 import model.Visitante;
 import utils.MuseuUtils;
 
-public class VisitanteControl {
-	VisitanteDAO dao = null;
+public class ClienteControl {
+	ClienteDAO dao = null;
 	ArrayList<Visitante> visitantes = new ArrayList<>();
 
 	public void cadastrar(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -22,7 +22,7 @@ public class VisitanteControl {
 		String paginaRetorno = "inicio.html";
 		if (visitante != null) {
 			if (dao == null)
-				dao = new VisitanteDAO();
+				dao = new ClienteDAO();
 			boolean inserido = dao.inserir(visitante);
 			req.setAttribute("adicionado", inserido);
 			if (inserido) {
@@ -39,7 +39,7 @@ public class VisitanteControl {
 		int id = Integer.parseInt(req.getParameter("id"));
 		if (id != 0) {
 			if (dao == null)
-				dao = new VisitanteDAO();
+				dao = new ClienteDAO();
 			dao.deletar(id);
 		}
 		listarVisitantes(req, res);
@@ -48,7 +48,7 @@ public class VisitanteControl {
 	public void listarVisitantes(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		visitantes.clear();
 		if (dao == null)
-			dao = new VisitanteDAO();
+			dao = new ClienteDAO();
 		visitantes = dao.carregaLista();
 		req.setAttribute("listaVisitantes", visitantes);
 		req.getRequestDispatcher("visitantesConsulta.jsp").forward(req, res);
@@ -61,7 +61,7 @@ public class VisitanteControl {
 		String paginaRetorno = "inicio.html";
 		if (visitante != null) {
 			if (dao == null)
-				dao = new VisitanteDAO();
+				dao = new ClienteDAO();
 			boolean inserido = dao.atualizar(visitante);
 			req.setAttribute("adicionado", inserido);
 			if (inserido) {
@@ -78,7 +78,7 @@ public class VisitanteControl {
 		int id = Integer.parseInt(req.getParameter("id"));
 		if (id != 0) {
 			if (dao == null)
-				dao = new VisitanteDAO();
+				dao = new ClienteDAO();
 			Visitante visitante = dao.selectByPk(id);
 			if (visitante != null) {
 				req.setAttribute("visitanteEditar", visitante);

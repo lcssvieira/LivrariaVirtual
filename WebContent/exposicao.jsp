@@ -56,25 +56,49 @@
 									value="<c:out value="${exposicaoEditar.nome}"/>" />
 							</div>
 						</div>
+					
 						<div class="row 50%">
 							<div class="6u 12u(mobile)">
-								Museu: <input name="museu" placeholder="Id do Museu" type="text"
-									value="<c:out value="${exposicaoEditar.getMuseu().getNome()}"/>" />
-							</div>
-							<div class="6u 12u(mobile)" style="margin-top: 35px;">
-								&nbsp; <a href="void(0);"><i class="fa fa-search"></i></a>
+								Valor do Ingresso: <input name="valor_ingresso" id="valor_ingresso"
+									placeholder="Valor do Ingresso" type="text"
+									value="<c:out value="${exposicaoEditar.valorFormatado}"/>" />
 							</div>
 						</div>
+						<div class="row 50%">
+								<div class="6u 12u(mobile)">
+								Museu: <select id="clienteSelecionado" name="museuSelecionado">
+									<option value="">Selecione um museu</option>
+									<c:forEach items="${listaMuseus}" var="museu">
+		
+									<option id="museu_item" value="${museu.id}" >${museu.nome}</option>
+									</c:forEach>
+								</select>
+							</div>
+						</div>
+						
+						<div class="row 50%">
+							<div class="12u">
+								Localização interna: <input name="secao"
+									placeholder="Seção, Sala ou Ala do Museu" type="text"
+									value="<c:out value="${exposicaoEditar.secao}"/>" />
+							</div>
+						</div>
+						
 
 						<div class="row 50%">
 							<div class="6u 12u(mobile)">
-								Obra: <select id="obrasSelecionadas" name="obrasSelecionadas"
-									onchange="adicionarObraNaExposicao();">
+								Obra: <select id="obrasSelecionadas" name="obrasSelecionadas">
+									<option value="">Selecione uma obra</option>
 									<c:forEach items="${listaObras}" var="obra">
 										<option value="${obra.id}">${obra.nome}</option>
 									</c:forEach>
 								</select>
-
+							</div>
+					
+							<div class="6u 12u(mobile)">
+								<div class="12u"style="padding-top:0.7cm;">
+								<div onclick="adicionarObraNaExposicao();" type="submit" class="form-button-submit button">(+)adicionar</div>
+								</div>
 							</div>
 						</div>
 						<div class="row 50%">
@@ -87,14 +111,29 @@
 
 						<div class="row 50%">
 							<div class="6u 12u(mobile)">
-								Data início: <input name="dataInicio"
-									placeholder="Data início em dd/mm/aaaa" type="text"
-									value="<c:out value="${exposicaoEditar.dataInicioFormatada}"/>" />
+								Data início:
+									<div class="input-group date">
+									<input id="dataInicio" type="text" class="form-control"
+										style="padding: 1.75em 1em 1.75em 1em;"
+										placeholder="dd/mm/aaaa" name="data"
+										value="<c:out value="${exposicaoEditar.dataInicioFormatada}"/>"
+										><span
+										class="input-group-addon"><i
+										class="glyphicon glyphicon-th"></i></span>
+								</div>
+								
 							</div>
 							<div class="6u 12u(mobile)">
-								Data Fim: <input name="dataFim"
-									placeholder="Data Fim em dd/mm/aaaa" type="text"
-									value="<c:out value="${exposicaoEditar.dataFimFormatada}"/>" />
+								Data fim:
+									<div class="input-group date">
+									<input id="dataFim" type="text" class="form-control"
+										style="padding: 1.75em 1em 1.75em 1em;"
+										placeholder="dd/mm/aaaa" name="data"
+										value="<c:out value="${exposicaoEditar.dataFimFormatada}"/>"
+										><span
+										class="input-group-addon"><i
+										class="glyphicon glyphicon-th"></i></span>
+								</div>
 							</div>
 						</div>
 						<div class="row 50%">
@@ -102,23 +141,24 @@
 								<table class="table table-striped table-hover table-condensed"
 									name="tableObras" id="tableObras">
 									<thead>
-										<tr>
+										<tr id="item_obra">
+											<th style="display:none">Id</th>
 											<th>Nome da Obra</th>
 											<th>Tipo da Obra</th>
 											<th>Período Histórico</th>
 											<th>Artista</th>
-											<th>Valor Estimado</th>
+											<th>#</th>
 										</tr>
 									</thead>
 									<tbody>
-										<c:forEach items="${exposicaoEditar.listaObras}" var="obra">
-											<tr>
+										<c:forEach items="${exposicaoEditar.getObras()}" var="obra">
+											<tr id="item_obra">
+												<td class="obra_id" style="display:none"><c:out value="${obra.getId()}"></c:out></td>
 												<td><c:out value="${obra.nome}"></c:out></td>
 												<td><c:out value="${obra.tipo}"></c:out></td>
 												<td><c:out value="${obra.periodo}"></c:out></td>
 												<td><c:out value="${obra.artista}"></c:out></td>
-												<td><c:out value="${obra.valorEstimado}"></c:out></td>
-												<td><a href="#" onclick="excluir('${obra.id}');">Excluir</a></td>
+												<td><a style="color:darkred;" href=#tableObras onclick="excluir('${obra.id}');">Remover da lista</a></td>
 											</tr>
 										</c:forEach>
 									</tbody>
@@ -151,6 +191,7 @@
 	<script src="./assets/js/bootstrap-datepicker.min.js"></script>
 	<script src="./assets/js/locales/bootstrap-datepicker.pt-BR.min.js"></script>
 	<script type="text/javascript">
+	
 		var obras = new Array();
 		obras.push('${exposicaoEditar.listaIds}');
 		$('.input-group.date').datepicker({
@@ -161,29 +202,68 @@
 		function adicionarObraNaExposicao() {
 			var selectBox = document.getElementById("obrasSelecionadas");
 			var valor = selectBox.options[selectBox.selectedIndex].value;
-			obras.push(valor);
-			document.forms[0].obrasId.value = obras;
-			$
-					.post(
-							"ServletMuseu.do?classe=ExposicaoControl&metodo=getObraById",
-							{
-								id : valor
-							}, function(obra) {
-								var html = "";
-								html += '<tr>' + '<td>' + obra.nome + '</td>'
-										+ '<td>' + obra.tipo + '</td>' + '<td>'
-										+ obra.periodo + '</td>' + '<td>'
-										+ obra.artista + '</td>' + '<td>'
-										+ obra.valorEstimado + '</td>'
-										+ '</tr>';
-								$("#tableObras").append(html);
-							}, "json");
+			if (valor != "" && naoAdicionado(valor)){
+				obras.push(valor);
+				document.forms[0].obrasId.value = obras;
+				$
+						.post(
+								"ServletMuseu.do?classe=ExposicaoControl&metodo=getObraById",
+								{
+									id : valor
+								}, function(obra) {
+									var html = "";
+									html 	+='<tr>' 
+											+ '<td class="obra_id" style="display:none">' + valor + '</td>'
+											+ '<td>' + obra.nome + '</td>'
+											+ '<td>' + obra.tipo + '</td>' 
+											+ '<td>'+ obra.periodo + '</td>' 
+											+ '<td>'+ obra.artista + '</td>' 
+											+ '<td><a style="color:darkred;" href=#tableObras onclick=excluir('+obra.id+')>Remover da lista</a>'+'</td>'
+											+ '</tr>';
+									$("#tableObras").append(html);
+								}, "json");
+			}
+			
 		}
+		
 
-		function excluir(id) {
-			var index = obras.indexOf(id);
-			if (index > -1) {
-				obras.splice(index, 1);
+	function converterMoneyTextEmDouble(text){
+			if (text != undefined && text.trim() != null){
+				var cleanText = text.replace("R$ ","").replace(",",".");
+				return parseFloat(cleanText);
+			}
+			return 0;
+			
+		}
+	function naoAdicionado(obraId){
+		
+		var id = $(".obra_id");
+		if (id === null || id ===undefined)
+			return true;
+		else
+		{
+			for (var i=0;i<id.length;i++){
+				var item = id[i];
+				if($(item).text() === obraId)
+					return false;
+			}
+		}
+		return true;
+	}
+
+	
+	function excluir(id) {
+			var id = $("#obra_id");
+			if (id != null && id !=undefined)
+			{	
+				for (var i=0;i<id.length;i++){
+					var item = id[i];
+					if($(item).text() == id.text()){
+						var parent = $(item).parent();
+						$(parent).remove();
+					}
+						
+				}
 			}
 		}
 	</script>

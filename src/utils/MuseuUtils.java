@@ -26,5 +26,27 @@ public class MuseuUtils {
 			return new Date();
 
 	}
+	
+	public static Double converteMoneyTextEmDouble(String text){
+		if (text != "" && text.trim() != null){
+			String cleanText = text.replace("R$ ","").replace(",",".");
+			return Double.parseDouble(cleanText);
+		}
+		return 0.0;
+	}
+	
+	public static String converteDoubleEmMoneyText(Double valor){
+		if (valor != null){
+			String text = (valor < 1 ?"0":"") + valor.toString();
+			text="R$ " + text;
+			String result= text.substring(0,text.length() -2) + "," + text.substring(text.length() -1, text.length());
+			if (result =="R$ ,00")
+				result = "R$ 0,00";
+			
+			return result;
+		}
+		return "R$ 0,00";
+		
+	}
 
 }

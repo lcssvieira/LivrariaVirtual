@@ -6,23 +6,26 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import dao.EmprestimoDAO;
-import dao.MuseuDAO;
-import dao.ObraDAO;
+import dao.EditoraDAO;
+import dao.LivroDAO;
 import model.Emprestimo;
 import utils.MuseuUtils;
 
-public class EmprestimoControl {
+public class UsuarioControl {
 	EmprestimoDAO dao;
 	Emprestimo emprestimo;
 
-	public EmprestimoControl() {
+	public UsuarioControl() {
 		dao = new EmprestimoDAO();
 		emprestimo = new Emprestimo();
 	}
 
 	public void selectCadastrar(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		req.setAttribute("listaObras", new ObraDAO().carregaListaEmprestimo(0));
-		req.setAttribute("listaMuseus", new MuseuDAO().carregaLista());
+		LivroDAO livroDAO = new LivroDAO();
+		EditoraDAO museuDAO = new EditoraDAO();
+		//req.setAttribute("listaObras", obraDAO.carregaListaEmprestimo(0));
+		req.setAttribute("listaObras", livroDAO.carregaLista());
+		req.setAttribute("listaMuseus", museuDAO.carregaLista());
 		req.getRequestDispatcher("emprestimo.jsp").forward(req, res);
 	}
 
@@ -35,7 +38,7 @@ public class EmprestimoControl {
 		boolean cadastrado = dao.cadastrar(vo);
 		req.setAttribute("inserido", cadastrado);
 		if (cadastrado){
-			new ObraDAO().atualizarEmprestado(vo.getObra(), 1);
+			new LivroDAO().atualizarEmprestado(vo.getObra(), 1);
 			listarEmprestimos(req, res);}
 		else {
 			req.setAttribute("emprestimoEditar", vo);
@@ -45,8 +48,8 @@ public class EmprestimoControl {
 
 	private Emprestimo loadParameters(HttpServletRequest req) throws ParseException {
 		Emprestimo vo = new Emprestimo();
-		vo.setMuseu(new MuseuDAO().selectByPk(Integer.parseInt(req.getParameter("museu"))));
-		vo.setObra(new ObraDAO().selectByPk(Integer.parseInt(req.getParameter("obra"))));
+		vo.setMuseu(new EditoraDAO().selectByPk(Integer.parseInt(req.getParameter("museu"))));
+		vo.setObra(new LivroDAO().selectByPk(Integer.parseInt(req.getParameter("obra"))));
 		vo.setDataInicio(MuseuUtils.converteStringEmData(req.getParameter("dataInicio")));
 		vo.setDataFim(MuseuUtils.converteStringEmData(req.getParameter("dataFim")));
 		vo.setDescricao(req.getParameter("descricao"));
@@ -79,7 +82,7 @@ public class EmprestimoControl {
 			if (dao == null)
 				dao = new EmprestimoDAO();
 			dao.deletar(id);
-			new ObraDAO().atualizarEmprestado(emprestimo.getObra(), 0);
+			new LivroDAO().atualizarEmprestado(emprestimo.getObra(), 0);
 		}
 		listarEmprestimos(req, res);
 	}

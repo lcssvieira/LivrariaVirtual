@@ -56,11 +56,11 @@
 						</div>
 						<div class="row 50%">
 							<div class="6u 12u(mobile)">
-								Fone Museu: <input name="fone" placeholder="Telefone do Museu"
+								Telefone do Museu: <input name="fone" placeholder="Telefone do Museu"
 									type="text" value="<c:out value="${museuEditar.fone}"/>" />
 							</div>
 							<div class="6u 12u(mobile)">
-								Fone Responsável: <input name="foneResponsavel"
+								Telefone do Responsável: <input name="foneResponsavel"
 									placeholder="Telefone do Responsável pelo Museu" type="text"
 									value="<c:out value="${museuEditar.foneResponsavel}"/>" />
 							</div>
@@ -93,6 +93,12 @@
 							<div class="6u 12u(mobile)">
 								Estado: <select name="estado" value="${museuEditar.estado}"
 									selected>
+									<option value="">Selecione um estado</option>
+									<option value="AL">Alagoas</option>
+									<option value="CE">Ceará</option>
+									<option value="MG">Minas Gerais</option>
+									<option value="PA">Pará</option>
+									<option value="PR">Paraná</option>
 									<option value="SP">São Paulo</option>
 									<option value="RJ">Rio de Janeiro</option>
 								</select>
@@ -100,13 +106,13 @@
 						</div>
 						<div class="row 50%">
 							<div class="12u">
-								E-mail Museu: <input name="email" placeholder="E-mail do Museu"
+								E-mail do Museu: <input name="email" placeholder="E-mail do Museu"
 									type="text" value="<c:out value="${museuEditar.email}"/>" />
 							</div>
 						</div>
 						<div class="row 50%">
 							<div class="12u">
-								E-mail Museu: <input name="emailResponsavel"
+								E-mail do Responsável: <input name="emailResponsavel"
 									placeholder="E-mail do Responsável pelo Museu" type="text"
 									value="<c:out value="${museuEditar.emailResponsavel}"/>" />
 							</div>
