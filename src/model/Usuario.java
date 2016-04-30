@@ -1,7 +1,7 @@
 package model;
 
 public class Usuario {
-	private long id;
+	private long id_usuario;
 	private String nome;
 	private String username;
 	private String senha;
@@ -36,5 +36,13 @@ public class Usuario {
 
 	public void setNome(String nome) {
 		this.nome = nome;
+	}
+
+	public long getId_usuario() {
+		return id_usuario;
+	}
+
+	public void setId_usuario(long id_usuario) {
+		this.id_usuario = id_usuario;
 	}
 }

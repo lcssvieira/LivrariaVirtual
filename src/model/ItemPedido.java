@@ -25,5 +25,12 @@ public class ItemPedido {
 	public void setPercDesconto(Double percDesconto) {
 		this.percDesconto = percDesconto;
 	}
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+	
 	
 }

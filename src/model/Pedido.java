@@ -6,6 +6,7 @@ import java.util.List;
 public class Pedido {
 
 	private long id, numero;
+	private Cliente cliente;
 	private Date dataVenda;
 	private FormaPagamento formaPagamento;	
 	private List<ItemPedido> itens;
@@ -34,5 +35,18 @@ public class Pedido {
 	public void setItens(List<ItemPedido> itens) {
 		this.itens = itens;
 	}
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+	public Cliente getCliente() {
+		return cliente;
+	}
+	public void setCliente(Cliente cliente) {
+		this.cliente = cliente;
+	}
+	
 	
 }

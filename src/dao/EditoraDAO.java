@@ -8,31 +8,29 @@ import java.util.ArrayList;
 import model.Editora;
 
 public class EditoraDAO {
-	private static final String CADASTRAR = "INSERT INTO tb_museu (nome, nome_responsavel, fone, fone_responsavel,"
-			+ " cep, endereco, numero,complemento, estado,email, email_responsavel) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
-	private static final String CONSULTA_BASICA = "SELECT id, nome, nome_responsavel, fone, fone_responsavel FROM tb_museu";
-	private static final String DELETAR = "DELETE FROM tb_museu WHERE id=?";
-	private static final String SELECT_BY_ID = "SELECT * FROM tb_museu WHERE id = ?";
-	private static final String ALTERAR = "UPDATE tb_museu SET nome = ?, nome_responsavel=?, fone=?, fone_responsavel=?, cep=?, "
-			+ "endereco=?, numero =?, complemento = ?, estado =?, email=  ?, email_responsavel=? WHERE id=?";
+	private static String tbName = "tb_editora";
+	private static String SELECT = String.format("SELECT * FROM {0}",EditoraDAO.tbName);
+	private static String SELECTBYPK = String.format("SELECT * FROM {0} WHERE id = ?",EditoraDAO.tbName);
+	private static String INSERT = String.format("INSERT INTO {0} VALUES (nome,cnpj,telefones,logradouro,cep,endereco,numero,complemento,bairro,cidade,uf) VALUES (?,?,?,?,?,?,?,?,?,?,?)",EditoraDAO.tbName);
+	private static String DELETE = String.format("DELETE FROM {0} WHERE id=?",EditoraDAO.tbName);
+	private static String UPDATE = String.format("UPDATE {0} SET nome=?,cnpj=?,telefones=?,logradouro=?,cep=?,endereco=?,numero=?,complemento=?,bairro=?,cidade=?,uf=? WHERE id=?",EditoraDAO.tbName);
 
-	public boolean cadastrar(Editora vo) {
+	public boolean inserir(Editora editora) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
-			ps = DaoUtils.getConnection().prepareStatement(CADASTRAR);
-			ps.setString(1, vo.getNome());
-			ps.setString(2, vo.getNomeResponsavel());
-			ps.setString(3, vo.getFone());
-			ps.setString(4, vo.getFoneResponsavel());
-			ps.setString(5, vo.getCep());
-			ps.setString(6, vo.getEndereco());
-			ps.setString(7, vo.getNumero());
-			ps.setString(8, vo.getComplemento());
-			ps.setString(9, vo.getEstado());
-			ps.setString(10, vo.getEmail());
-			ps.setString(11, vo.getEmailResponsavel());
-
+			ps = DaoUtils.getConnection().prepareStatement(INSERT);
+			ps.setString(1, editora.getNome());
+			ps.setString(2, editora.getCnpj());
+			ps.setString(3, editora.getTelefones());
+			ps.setString(4, editora.getLogradouro());
+			ps.setString(5, editora.getCep());
+			ps.setString(6, editora.getEndereco());
+			ps.setString(7, editora.getNumero());
+			ps.setString(8, editora.getComplemento());
+			ps.setString(9, editora.getBairro());
+			ps.setString(10, editora.getCidade());
+			ps.setString(11, editora.getUf());
 			return ps.executeUpdate() > 0;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -46,22 +44,29 @@ public class EditoraDAO {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
-			ps = DaoUtils.getConnection().prepareStatement(CONSULTA_BASICA);
+			ps = DaoUtils.getConnection().prepareStatement(SELECT);
 			ResultSet rs = ps.executeQuery();
-			ArrayList<Editora> museus = null;
+			ArrayList<Editora> editoras = null;
 			while (rs.next()) {
-				if (museus == null)
-					museus = new ArrayList<>();
-				Editora m = new Editora();
-				m.setId(rs.getInt("id"));
-				m.setNome(rs.getString("nome"));
-				m.setNomeResponsavel(rs.getString("nome_responsavel"));
-				m.setFone(rs.getString("fone"));
-				m.setFoneResponsavel(rs.getString("fone_responsavel"));
-				museus.add(m);
+				if (editoras == null)
+					editoras = new ArrayList<>();
+				Editora editora = new Editora();
+				editora.setId(rs.getInt("id"));
+				editora.setNome(rs.getString("nome"));
+				editora.setCnpj(rs.getString("cnpj"));
+				editora.setTelefones(rs.getString("telefones"));
+				editora.setLogradouro(rs.getString("logradouro"));
+				editora.setCep(rs.getString("cep"));
+				editora.setEndereco(rs.getString("endereco"));
+				editora.setNumero(rs.getString("numero"));
+				editora.setComplemento(rs.getString("complemento"));
+				editora.setBairro(rs.getString("bairro"));
+				editora.setCidade(rs.getString("cidade"));
+				editora.setUf(rs.getString("uf"));
+				editoras.add(editora);
 			}
 
-			return museus;
+			return editoras;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -74,7 +79,7 @@ public class EditoraDAO {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
-			ps = DaoUtils.getConnection().prepareStatement(DELETAR);
+			ps = DaoUtils.getConnection().prepareStatement(DELETE);
 			ps.setInt(1, id);
 
 			ps.executeUpdate();
@@ -89,24 +94,25 @@ public class EditoraDAO {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
-			ps = DaoUtils.getConnection().prepareStatement(SELECT_BY_ID);
+			ps = DaoUtils.getConnection().prepareStatement(SELECTBYPK);
 			ps.setInt(1, id);
 			ResultSet rs = ps.executeQuery();
 			Editora museu = null;
 			while (rs.next()) {
 				museu = new Editora();
-				museu.setId(rs.getInt("id"));
-				museu.setNome(rs.getString("nome"));
-				museu.setNomeResponsavel(rs.getString("nome_responsavel"));
-				museu.setFone(rs.getString("fone"));
-				museu.setFoneResponsavel(rs.getString("fone_responsavel"));
-				museu.setCep(rs.getString("cep"));
-				museu.setComplemento(rs.getString("complemento"));
-				museu.setEmail(rs.getString("email"));
-				museu.setEmailResponsavel(rs.getString("email_responsavel"));
-				museu.setEndereco(rs.getString("endereco"));
-				museu.setEstado(rs.getString("estado"));
-				museu.setNumero(rs.getString("numero"));
+				Editora editora = new Editora();
+				editora.setId(rs.getInt("id"));
+				editora.setNome(rs.getString("nome"));
+				editora.setCnpj(rs.getString("cnpj"));
+				editora.setTelefones(rs.getString("telefones"));
+				editora.setLogradouro(rs.getString("logradouro"));
+				editora.setCep(rs.getString("cep"));
+				editora.setEndereco(rs.getString("endereco"));
+				editora.setNumero(rs.getString("numero"));
+				editora.setComplemento(rs.getString("complemento"));
+				editora.setBairro(rs.getString("bairro"));
+				editora.setCidade(rs.getString("cidade"));
+				editora.setUf(rs.getString("uf"));
 			}
 
 			return museu;
@@ -118,23 +124,23 @@ public class EditoraDAO {
 		}
 	}
 
-	public boolean alterar(Editora vo) {
+	public boolean alterar(Editora editora) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
-			ps = DaoUtils.getConnection().prepareStatement(ALTERAR);
-			ps.setString(1, vo.getNome());
-			ps.setString(2, vo.getNomeResponsavel());
-			ps.setString(3, vo.getFone());
-			ps.setString(4, vo.getFoneResponsavel());
-			ps.setString(5, vo.getCep());
-			ps.setString(6, vo.getEndereco());
-			ps.setString(7, vo.getNumero());
-			ps.setString(8, vo.getComplemento());
-			ps.setString(9, vo.getEstado());
-			ps.setString(10, vo.getEmail());
-			ps.setString(11, vo.getEmailResponsavel());
-			ps.setLong(12, vo.getId());
+			ps = DaoUtils.getConnection().prepareStatement(UPDATE);
+			ps.setString(1, editora.getNome());
+			ps.setString(2, editora.getCnpj());
+			ps.setString(3, editora.getTelefones());
+			ps.setString(4, editora.getLogradouro());
+			ps.setString(5, editora.getCep());
+			ps.setString(6, editora.getEndereco());
+			ps.setString(7, editora.getNumero());
+			ps.setString(8, editora.getComplemento());
+			ps.setString(9, editora.getBairro());
+			ps.setString(10, editora.getCidade());
+			ps.setString(11, editora.getUf());
+			ps.setLong(12, editora.getId());
 			return ps.executeUpdate() > 0;
 		} catch (Exception e) {
 			e.printStackTrace();

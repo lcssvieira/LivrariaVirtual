@@ -103,6 +103,12 @@ public class Livro {
 	public void setAutores(List<Autor> autores) {
 		this.autores = autores;
 	}
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
 	
 	
 }

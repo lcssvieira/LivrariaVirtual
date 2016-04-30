@@ -5,31 +5,22 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
-import model.Visitante;
+import model.CategoriaLivro;
 
 public class CategoriaLivroDAO {
-	private static String SELECT = "SELECT * FROM tb_visitante";
-	private static String SELECTBYPK = "SELECT * FROM tb_visitante WHERE id=?";
-	private static String INSERT = "INSERT INTO tb_visitante (nome, escolaridade,cep,endereco,numero,complemento,genero, data_nascimento, nacionalidade, meio_transporte) VALUES(?,?,?,?,?,?,?,?,?,?)";
-	private static String DELETAR = "DELETE FROM tb_visitante where id = ?";
-	private static String UPDATE = "UPDATE tb_visitante SET nome = ?, escolaridade = ?, cep = ?, endereco =?, numero=?, complemento =? , genero=?,data_nascimento = ?,nacionalidade = ?, meio_transporte=? where id = ?";
+	private static String tbName = "tb_categoria_livro";
+	private static String SELECT = String.format("SELECT * FROM {0}",CategoriaLivroDAO.tbName);
+	private static String SELECTBYPK = String.format("SELECT * FROM {0} WHERE id=?", CategoriaLivroDAO.tbName);
+	private static String INSERT = String.format("INSERT INTO {0} (descricao) VALUES(?)", CategoriaLivroDAO.tbName);
+	private static String DELETE = String.format("DELETE FROM {0} where id = ?", CategoriaLivroDAO.tbName);
+	private static String UPDATE = String.format("UPDATE {0} SET descricao = ? where id = ?", CategoriaLivroDAO.tbName);
 
-	public boolean inserir(Visitante visitante) throws Exception {
+	public boolean inserir(CategoriaLivro categoria) throws Exception {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
 			ps = DaoUtils.getConnection().prepareStatement(INSERT);
-			ps.setString(1, visitante.getNome());
-			ps.setString(2, visitante.getEscolaridade());
-			ps.setString(3, visitante.getCep());
-			ps.setString(4, visitante.getEndereco());
-			ps.setString(5, visitante.getNumero());
-			ps.setString(6, visitante.getComplemento());
-			ps.setInt(7, visitante.getGenero());
-			ps.setDate(8, new java.sql.Date(visitante.getDataNascimento().getTime()));
-			ps.setString(9, visitante.getNacionalidade());
-			ps.setString(10, visitante.getTransporte());
-
+			ps.setString(1, categoria.getDescricao());
 			return ps.executeUpdate() > 0;
 		} catch (Exception e) {
 			e.getStackTrace();
@@ -39,29 +30,20 @@ public class CategoriaLivroDAO {
 		}
 	}
 
-	public ArrayList<Visitante> carregaLista() throws Exception {
+	public ArrayList<CategoriaLivro> carregaLista() throws Exception {
 		Connection conn = DaoUtils.getConnection();
 		PreparedStatement ps = conn.prepareStatement(SELECT);
 		ResultSet rs = ps.executeQuery();
-		ArrayList<Visitante> visitantes = new ArrayList<>();
+		ArrayList<CategoriaLivro> categorias = new ArrayList<>();
 		while (rs.next()) {
-			Visitante visitante = new Visitante();
-			visitante.setId(rs.getInt("id"));
-			visitante.setDataNascimento(new java.util.Date(rs.getDate("data_nascimento").getTime()));
-			visitante.setNome(rs.getString("nome"));
-			visitante.setCep(rs.getString("cep"));
-			visitante.setComplemento(rs.getString("complemento"));
-			visitante.setEndereco(rs.getString("endereco"));
-			visitante.setEscolaridade(rs.getString("escolaridade"));
-			visitante.setGenero(rs.getInt("genero"));
-			visitante.setNumero(rs.getString("numero"));
-			visitante.setNacionalidade(rs.getString("nacionalidade"));
-			visitante.setTransporte(rs.getString("meio_transporte"));
-			visitantes.add(visitante);
-			visitante = null;
+			CategoriaLivro categoria = new CategoriaLivro();
+			categoria.setId(rs.getLong("id"));
+			categoria.setDescricao(rs.getString("descricao"));
+			categorias.add(categoria);
+			categoria = null;
 		}
 		DaoUtils.fechaConexoes(conn, ps, rs);
-		return visitantes;
+		return categorias;
 	}
 
 	public void deletar(int id) {
@@ -69,7 +51,7 @@ public class CategoriaLivroDAO {
 		PreparedStatement ps = null;
 		try {
 			conn = DaoUtils.getConnection();
-			ps = conn.prepareStatement(DELETAR);
+			ps = conn.prepareStatement(DELETE);
 			ps.setInt(1, id);
 			ps.executeUpdate();
 		} catch (Exception e) {
@@ -79,54 +61,37 @@ public class CategoriaLivroDAO {
 		}
 	}
 
-	public Visitante selectByPk(int id) {
+	public CategoriaLivro selectByPk(int id) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		Visitante visitante = null;
+		CategoriaLivro categoria = null;
 		try {
 			conn = DaoUtils.getConnection();
 			ps = conn.prepareStatement(SELECTBYPK);
 			ps.setInt(1, id);
 			rs = ps.executeQuery();
 			if (rs.next()) {
-				visitante = new Visitante();
-				visitante.setId(id);
-				visitante.setDataNascimento(new java.util.Date(rs.getDate("data_nascimento").getTime()));
-				visitante.setNome(rs.getString("nome"));
-				visitante.setCep(rs.getString("cep"));
-				visitante.setComplemento(rs.getString("complemento"));
-				visitante.setEndereco(rs.getString("endereco"));
-				visitante.setEscolaridade(rs.getString("escolaridade"));
-				visitante.setGenero(rs.getInt("genero"));
-				visitante.setNumero(rs.getString("numero"));
-				visitante.setNacionalidade(rs.getString("nacionalidade"));
-				visitante.setTransporte(rs.getString("meio_transporte"));
+				categoria = new CategoriaLivro();
+				categoria.setId(rs.getLong("id"));
+				categoria.setDescricao(rs.getString("descricao"));
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			DaoUtils.fechaConexoes(conn, ps, rs);
 		}
-		return visitante;
+		return categoria;
 	}
 
-	public boolean atualizar(Visitante visitante) {
+	public boolean atualizar(CategoriaLivro categoria) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
 			ps = DaoUtils.getConnection().prepareStatement(UPDATE);
-			ps.setString(1, visitante.getNome());
-			ps.setString(2, visitante.getEscolaridade());
-			ps.setString(3, visitante.getCep());
-			ps.setString(4, visitante.getEndereco());
-			ps.setString(5, visitante.getNumero());
-			ps.setString(6, visitante.getComplemento());
-			ps.setInt(7, visitante.getGenero());
-			ps.setDate(8, new java.sql.Date(visitante.getDataNascimento().getTime()));
-			ps.setString(9, visitante.getNacionalidade());
-			ps.setString(10, visitante.getTransporte());
-			ps.setLong(11, visitante.getId());
+			ps.setString(1, categoria.getDescricao());
+			ps.setLong(2, categoria.getId());
 			return ps.executeUpdate() > 0;
 		} catch (Exception e) {
 			e.getStackTrace();

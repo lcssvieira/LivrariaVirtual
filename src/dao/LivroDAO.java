@@ -3,64 +3,141 @@ package dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
+import model.Autor;
+import model.CategoriaLivro;
+import model.Editora;
 import model.Livro;
 
 public class LivroDAO {
-	private static String SELECT = "SELECT * FROM tb_obra";
-	private static String SELECT_EMPRESTIMO = "SELECT * FROM tb_obra WHERE fl_emprestado =  ? ";
-	private static String SELECTBYPK = "SELECT * FROM tb_obra WHERE id=?";
-	private static String INSERT = "INSERT INTO tb_obra (nome, descricao,tipo,data,periodo,artista,valor_estimado) VALUES(?,?,?,?,?,?,?)";
-	private static String DELETAR = "DELETE FROM tb_obra where id = ?";
-	private static String UPDATE = "UPDATE tb_obra SET nome = ?, descricao = ?, tipo = ?, data =?, periodo=?, artista =?, valor_estimado = ? where id = ?";
-	private static String UPDATE_EMPRESTIMO = "UPDATE tb_obra SET fl_emprestado = ? where id = ?";
+	private static String tbName = "tb_livro";
+	private static String tbCategorias = "tb_livros_categorias";
+	private static String tbAutores = "tb_livros_autores";
+	private static String SELECT = String.format("SELECT * FROM {0}",LivroDAO.tbName);
+	private static String SELECTBYPK = String.format("SELECT * FROM {0} WHERE id=?",LivroDAO.tbName);
+	private static String INSERT = String.format("INSERT INTO {0} (id_editora, isbn,titulo,formato,sumario,resumo,data_publicacao, preco_custo,preco_venda, margem_lucro, quantidade_estoque,estoque_minimo, numero_paginas) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",LivroDAO.tbName);
+	private static String DELETE = String.format("DELETE FROM {0} where id = ?",LivroDAO.tbName);
+	private static String UPDATE = String.format("UPDATE {0} SET id_editora=?, isbn=?,titulo=?,formato=?,sumario=?,resumo=?,data_publicacao=?, preco_custo=?,preco_venda=?, margem_lucro=?, quantidade_estoque=?,estoque_minimo=?, numero_paginas =? where id = ?",LivroDAO.tbName);
 
-	public boolean inserir(Livro obra) throws Exception {
+	private static String INSERTCATEGORIAS = String.format("INSERT INTO {0} (id_livro,id_categoria) VALUES(?,?)", LivroDAO.tbCategorias);
+	private static String INSERTAUTORES = String.format("INSERT INTO {0} (id_livro,id_autor) VALUES(?,?)", LivroDAO.tbAutores);
+	private static String DELETEAUTORES = String.format("DELETE FROM {0} where id_livro = ?",LivroDAO.tbAutores);
+	private static String DELETECATEGORIAS = String.format("DELETE FROM {0} where id_livro = ?",LivroDAO.tbCategorias);
+	private static String SELECTCATEGORIAS = String.format("SELECT * FROM {0} where id_livro = ?",LivroDAO.tbCategorias);
+	private static String SELECTAUTORES = String.format("SELECT * FROM {0} where id_livro = ?",LivroDAO.tbAutores);
+	
+	private CategoriaLivroDAO categoriaDAO = new CategoriaLivroDAO();
+	private AutorDAO autorDAO = new AutorDAO();
+	
+	public boolean inserir(Livro livro) throws Exception {
 		Connection conn = null;
 		PreparedStatement ps = null;
+		PreparedStatement ps2 = null;
+		PreparedStatement ps3 = null;
+		int result = 0;
 		try {
 			ps = DaoUtils.getConnection().prepareStatement(INSERT);
-			ps.setString(1, obra.getNome());
-			ps.setString(2, obra.getDescricao());
-			ps.setString(3, obra.getTipo());
-			if (obra.getData() != null)
-				ps.setDate(4, new java.sql.Date(obra.getData().getTime()));
-			else
-				ps.setDate(4, null);
-			ps.setString(5, obra.getPeriodo());
-			ps.setString(6, obra.getArtista());
-			ps.setDouble(7, obra.getValorEstimado());
-			return ps.executeUpdate() > 0;
+			Editora  editora = livro.getEditora();
+			if (editora != null) {
+				// insere livro
+				ps.setLong(1, editora.getId());
+				ps.setString(2, livro.getIsbn());
+				ps.setString(3, livro.getTitulo());
+				ps.setString(4, livro.getFormato());
+				ps.setString(5, livro.getSumario());
+				ps.setString(6, livro.getResumo());
+				ps.setDate(7,new java.sql.Date(livro.getDataPublicacao().getTime()));
+				ps.setDouble(8, livro.getPrecoCusto());
+				ps.setDouble(9, livro.getPrecoVenda());
+				ps.setDouble(10, livro.getMargemLucro());
+				ps.setInt(11, livro.getQuantidadeEstoque());
+				ps.setInt(12, livro.getEstoqueMinimo());
+				ps.setInt(13, livro.getNumeroPaginas());
+				result = ps.executeUpdate();
+				// insere categorias
+				ps2 = DaoUtils.getConnection().prepareStatement(INSERTCATEGORIAS);
+				for (CategoriaLivro categoria : livro.getCategorias()) {
+					ps2.setLong(1, livro.getId());
+					ps2.setLong(2, categoria.getId());
+					result+= ps2.executeUpdate();
+				}
+				// insere autores
+				ps3 = DaoUtils.getConnection().prepareStatement(INSERTAUTORES);
+				for (Autor autor : livro.getAutores()) {
+					ps3.setLong(1, livro.getId());
+					ps3.setLong(2, autor.getId());
+					result+= ps3.executeUpdate();
+				}
+			}
+			return result > 0;
 		} catch (Exception e) {
 			e.getStackTrace();
 			return false;
 		} finally {
 			DaoUtils.fechaConexoes(conn, ps, null);
+			DaoUtils.fechaConexoes(conn, ps2, null);
+			DaoUtils.fechaConexoes(conn, ps3, null);
 		}
 	}
 
 	public ArrayList<Livro> carregaLista() throws Exception {
 		Connection conn = DaoUtils.getConnection();
 		PreparedStatement ps = conn.prepareStatement(SELECT);
+		PreparedStatement ps2 = null;
+		PreparedStatement ps3 = null;
 		ResultSet rs = ps.executeQuery();
-		ArrayList<Livro> obras = new ArrayList<>();
+		ResultSet rs2 = null;
+		ResultSet rs3 = null;
+		ArrayList<Livro> livros = new ArrayList<>();
 		while (rs.next()) {
-			Livro obra = new Livro();
-			obra.setId(rs.getInt("id"));
-			obra.setArtista(rs.getString("artista"));
-			if (rs.getDate("data") != null)
-				obra.setData(new java.util.Date(rs.getDate("data").getTime()));
-			obra.setDescricao(rs.getString("descricao"));
-			obra.setNome(rs.getString("nome"));
-			obra.setPeriodo(rs.getString("periodo"));
-			obra.setTipo(rs.getString("tipo"));
-			obras.add(obra);
-			obra = null;
+			// carrega livro
+			Livro livro = new Livro();
+			livro.setId(rs.getInt("id"));
+			livro.setIsbn(rs.getString("isbn"));
+			livro.setTitulo(rs.getString("titulo"));
+			livro.setFormato(rs.getString("formato"));
+			livro.setSumario(rs.getString("sumario"));
+			livro.setResumo(rs.getString("resumo"));
+			livro.setDataPublicacao(new java.util.Date(rs.getDate("data_publicacao").getTime()));
+			livro.setPrecoCusto(rs.getDouble("preco_custo"));
+			livro.setPrecoVenda(rs.getDouble("preco_venda"));
+			livro.setMargemLucro(rs.getDouble("margem_lucro"));
+			livro.setQuantidadeEstoque(rs.getInt("quantidade_estoque"));
+			livro.setEstoqueMinimo(rs.getInt("estoque_minimo"));
+			livro.setNumeroPaginas(rs.getInt("numero_paginas"));
+			
+			// carrega categorias
+			ArrayList<CategoriaLivro>categorias = new ArrayList<>();
+			ps2 = conn.prepareStatement(SELECTCATEGORIAS);
+			ps2.setLong(1,livro.getId());
+			rs2 = ps2.executeQuery();
+			while (rs2.next()) {
+				int id  = rs2.getInt("id_categoria");
+				CategoriaLivro categoria = categoriaDAO.selectByPk(id);
+				categorias.add(categoria);
+			}
+			
+			livro.setCategorias(categorias);
+			
+			// carrega autores
+			ArrayList<Autor>autores = new ArrayList<>();
+			ps3 = conn.prepareStatement(SELECTAUTORES);
+			ps3.setLong(1,livro.getId());
+			rs3 = ps3.executeQuery();
+			while (rs3.next()) {
+				int id  = rs3.getInt("id_autor");
+				Autor autor = autorDAO.selectByPk(id);
+				autores.add(autor);
+			}
+			livro.setAutores(autores);
+			livros.add(livro);
+			livro = null;
 		}
 		DaoUtils.fechaConexoes(conn, ps, rs);
-		return obras;
+		DaoUtils.fechaConexoes(conn, ps2, rs2);
+		DaoUtils.fechaConexoes(conn, ps3, rs3);
+		return livros;
 	}
 
 	public void deletar(int id) {
@@ -68,7 +145,7 @@ public class LivroDAO {
 		PreparedStatement ps = null;
 		try {
 			conn = DaoUtils.getConnection();
-			ps = conn.prepareStatement(DELETAR);
+			ps = conn.prepareStatement(DELETE);
 			ps.setInt(1, id);
 			ps.executeUpdate();
 		} catch (Exception e) {
@@ -80,95 +157,133 @@ public class LivroDAO {
 
 	public Livro selectByPk(int id) {
 		Connection conn = null;
-		PreparedStatement ps = null;
+		PreparedStatement ps1 = null;
+		PreparedStatement ps2 = null;
+		PreparedStatement ps3 = null;
 		ResultSet rs = null;
-		Livro obra = null;
+		ResultSet rs2 = null;
+		ResultSet rs3 = null;
+		Livro livro = null;
 		try {
 			conn = DaoUtils.getConnection();
-			ps = conn.prepareStatement(SELECTBYPK);
-			ps.setInt(1, id);
-			rs = ps.executeQuery();
+			ps1 = conn.prepareStatement(SELECTBYPK);
+			ps1.setInt(1, id);
+			rs = ps1.executeQuery();
 			if (rs.next()) {
-				obra = new Livro();
-				obra.setId(id);
-				obra.setArtista(rs.getString("artista"));
-				if (rs.getDate("data") != null)
-					obra.setData(new java.util.Date(rs.getDate("data").getTime()));
-				obra.setDescricao(rs.getString("descricao"));
-				obra.setNome(rs.getString("nome"));
-				obra.setTipo(rs.getString("tipo"));
-				obra.setPeriodo(rs.getString("periodo"));
-				obra.setValorEstimado(rs.getDouble("valor_estimado"));
+				livro = new Livro();
+				livro.setId(rs.getInt("id"));
+				livro.setIsbn(rs.getString("isbn"));
+				livro.setTitulo(rs.getString("titulo"));
+				livro.setFormato(rs.getString("formato"));
+				livro.setSumario(rs.getString("sumario"));
+				livro.setResumo(rs.getString("resumo"));
+				livro.setDataPublicacao(new java.util.Date(rs.getDate("data_publicacao").getTime()));
+				livro.setPrecoCusto(rs.getDouble("preco_custo"));
+				livro.setPrecoVenda(rs.getDouble("preco_venda"));
+				livro.setMargemLucro(rs.getDouble("margem_lucro"));
+				livro.setQuantidadeEstoque(rs.getInt("quantidade_estoque"));
+				livro.setEstoqueMinimo(rs.getInt("estoque_minimo"));
+				livro.setNumeroPaginas(rs.getInt("numero_paginas"));
+				
+				// carrega categorias
+				ArrayList<CategoriaLivro>categorias = new ArrayList<>();
+				ps2 = conn.prepareStatement(SELECTCATEGORIAS);
+				ps2.setLong(1,livro.getId());
+				rs2 = ps2.executeQuery();
+				while (rs2.next()) {
+					CategoriaLivro categoria = categoriaDAO.selectByPk(rs2.getInt("id_categoria"));
+					categorias.add(categoria);
+				}
+				
+				livro.setCategorias(categorias);
+				
+				// carrega autores
+				ArrayList<Autor>autores = new ArrayList<>();
+				ps3 = conn.prepareStatement(SELECTAUTORES);
+				ps3.setLong(1,livro.getId());
+				rs3 = ps3.executeQuery();
+				while (rs3.next()) {
+					Autor autor = autorDAO.selectByPk(rs3.getInt("id_autor"));
+					autores.add(autor);
+				}
+				livro.setAutores(autores);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			DaoUtils.fechaConexoes(conn, ps, rs);
+			DaoUtils.fechaConexoes(conn, ps1, rs);
+			DaoUtils.fechaConexoes(conn, ps2, rs2);
+			DaoUtils.fechaConexoes(conn, ps3, rs3);
 		}
-		return obra;
+		return livro;
 	}
 
-	public boolean atualizar(Livro obra) {
+	public boolean atualizar(Livro livro) {
 		Connection conn = null;
-		PreparedStatement ps = null;
+		PreparedStatement ps1 = null;
+		PreparedStatement ps2 = null;
+		PreparedStatement ps3 = null;
+		PreparedStatement ps4 = null;
+		PreparedStatement ps5 = null;
+		int result = 0;
 		try {
-			ps = DaoUtils.getConnection().prepareStatement(UPDATE);
-			ps.setString(1, obra.getNome());
-			ps.setString(2, obra.getDescricao());
-			ps.setString(3, obra.getTipo());
-			if (obra.getData() != null)
-				ps.setDate(4, new java.sql.Date(obra.getData().getTime()));
-			else
-				ps.setDate(4, null);
-			ps.setString(5, obra.getPeriodo());
-			ps.setString(6, obra.getArtista());
-			ps.setDouble(7, obra.getValorEstimado());
-			ps.setLong(8, obra.getId());
-			return ps.executeUpdate() > 0;
+			
+			Editora  editora = livro.getEditora();
+			if (editora != null) {
+				
+				// deleta ref categorias para inseri-las novamente
+				ps2 = DaoUtils.getConnection().prepareStatement(DELETECATEGORIAS);
+				ps2.setLong(1, livro.getId());
+				result+= ps2.executeUpdate();
+				
+				// deleta ref autores para inseri-las novamente
+				ps3 = DaoUtils.getConnection().prepareStatement(DELETEAUTORES);
+				ps3.setLong(1, livro.getId());
+				result+= ps3.executeUpdate();
+				
+				// atualiza livro
+				ps1 = DaoUtils.getConnection().prepareStatement(UPDATE);
+				ps1.setLong(1, editora.getId());
+				ps1.setString(2, livro.getIsbn());
+				ps1.setString(3, livro.getTitulo());
+				ps1.setString(4, livro.getFormato());
+				ps1.setString(5, livro.getSumario());
+				ps1.setString(6, livro.getResumo());
+				ps1.setDate(7,new java.sql.Date(livro.getDataPublicacao().getTime()));
+				ps1.setDouble(8, livro.getPrecoCusto());
+				ps1.setDouble(9, livro.getPrecoVenda());
+				ps1.setDouble(10, livro.getMargemLucro());
+				ps1.setInt(11, livro.getQuantidadeEstoque());
+				ps1.setInt(12, livro.getEstoqueMinimo());
+				ps1.setInt(13, livro.getNumeroPaginas());
+				ps1.setLong(14,livro.getId());
+				result = ps1.executeUpdate();
+				
+				// insere categorias
+				ps4 = DaoUtils.getConnection().prepareStatement(INSERTCATEGORIAS);
+				for (CategoriaLivro categoria : livro.getCategorias()) {
+					ps4.setLong(1, livro.getId());
+					ps4.setLong(2, categoria.getId());
+					result+= ps4.executeUpdate();
+				}
+				// insere autores
+				ps5 = DaoUtils.getConnection().prepareStatement(INSERTAUTORES);
+				for (Autor autor : livro.getAutores()) {
+					ps5.setLong(1, livro.getId());
+					ps5.setLong(2, autor.getId());
+					result+= ps5.executeUpdate();
+				}
+			}
+			return result > 0;
 		} catch (Exception e) {
 			e.getStackTrace();
 			return false;
 		} finally {
-			DaoUtils.fechaConexoes(conn, ps, null);
-		}
-	}
-
-	public ArrayList<Livro> carregaListaEmprestimo(int flEmprestimo) throws SQLException {
-		Connection conn = DaoUtils.getConnection();
-		PreparedStatement ps = conn.prepareStatement(SELECT_EMPRESTIMO);
-		ps.setInt(1, flEmprestimo);
-		ResultSet rs = ps.executeQuery();
-		ArrayList<Livro> obras = new ArrayList<>();
-		while (rs.next()) {
-			Livro obra = new Livro();
-			obra.setId(rs.getInt("id"));
-			obra.setArtista(rs.getString("artista"));
-			if (rs.getDate("data") != null)
-				obra.setData(new java.util.Date(rs.getDate("data").getTime()));
-			obra.setDescricao(rs.getString("descricao"));
-			obra.setNome(rs.getString("nome"));
-			obra.setPeriodo(rs.getString("periodo"));
-			obra.setTipo(rs.getString("tipo"));
-			obra.setFl_emprestado(rs.getInt("fl_emprestado"));
-			obras.add(obra);
-			obra = null;
-		}
-		DaoUtils.fechaConexoes(conn, ps, rs);
-		return obras;
-	}
-
-	public void atualizarEmprestado(Livro obra, int flEmprestado) {
-		Connection conn = null;
-		PreparedStatement ps = null;
-		try {
-			ps = DaoUtils.getConnection().prepareStatement(UPDATE_EMPRESTIMO);
-			ps.setInt(1,flEmprestado);
-			ps.setLong(2, obra.getId());
-			ps.executeUpdate();
-		} catch (Exception e) {
-			e.getStackTrace();
-		} finally {
-			DaoUtils.fechaConexoes(conn, ps, null);
+			DaoUtils.fechaConexoes(conn, ps1, null);
+			DaoUtils.fechaConexoes(conn, ps2, null);
+			DaoUtils.fechaConexoes(conn, ps3, null);
+			DaoUtils.fechaConexoes(conn, ps4, null);
+			DaoUtils.fechaConexoes(conn, ps5, null);
 		}
 	}
 }

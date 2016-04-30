@@ -6,6 +6,12 @@ public class Autor {
 	private long id;
 	private String nome, localNascimento, localFalecimento, biografia;
 	private Date dataNascimento, dataFalecimento;
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
 	public String getNome() {
 		return nome;
 	}

@@ -5,119 +5,233 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
+import model.Cliente;
 import model.FormaPagamento;
+import model.ItemPedido;
+import model.Livro;
 import model.Pedido;
 
 public class PedidoDAO {
 
-	private static String SELECT = "SELECT * FROM tb_venda";
-	private static String SELECTBYPK = "SELECT * FROM tb_venda WHERE id=?";
-	private static String INSERT = "INSERT INTO tb_venda (data, forma_pagamento) VALUES(?,?)"; 
-	private static String DELETE = "DELETE FROM tb_venda where id = ?";
-	private static String UPDATE = "UPDATE tb_venda SET data = ?, forma_pagamento = ? where id = ?";
-	private static String DELETE_INGRESSOS = "DELETE FROM tb_ingresso WHERE id_venda = ?";
-	public boolean inserir(Pedido venda){
+	private static String tbName ="tb_pedido";
+	private static String tbItens ="tb_itens_pedido";
+	private static String SELECT = String.format("SELECT * FROM {0}", PedidoDAO.tbName);
+	private static String SELECTBYPK =  String.format("SELECT * FROM {0} WHERE id=?", PedidoDAO.tbName);
+	private static String INSERT =  String.format("INSERT INTO {0} (id_cliente, numero, data_venda,forma_pagamento) VALUES(?,?,?,?)", PedidoDAO.tbName); 
+	private static String DELETE =  String.format("DELETE FROM {0} where id = ?", PedidoDAO.tbName);
+	private static String UPDATE =  String.format("UPDATE {0} SET id_cliente =?, numero?, data_venda = ?, forma_pagamento = ? where id = ?", PedidoDAO.tbName);
+	
+	private static String SELECTITENS = String.format("SELECT * FROM {0} where id_pedido = ?",PedidoDAO.tbItens);
+	private static String INSERTITEM = String.format("INSERT INTO {0} (id_pedido, id_livro, perc_desconto,quantidade) VALUES(?,?,?,?)",PedidoDAO.tbItens); 
+	private static String DELETEITENS = String.format("DELETE FROM {0} where id_pedido = ?",PedidoDAO.tbItens);
+	private ClienteDAO clienteDAO = new ClienteDAO();
+	private LivroDAO livroDAO = new LivroDAO();
+	
+	public boolean inserir(Pedido pedido){
 		Connection conn = null;
 		PreparedStatement ps = null;
+		PreparedStatement ps2 = null;
+		int result1 = 0;
+		int result2 = 0;
 		try {
+			// insere o pedido
 			ps = DaoUtils.getConnection().prepareStatement(INSERT);
-			ps.setDate(1,new java.sql.Date(venda.getData().getTime()));
-			ps.setLong(2, venda.getFormaPagamento().ordinal());
-			return ps.executeUpdate() > 0;
+			Cliente cliente = pedido.getCliente();
+			if (cliente != null) {
+				ps.setLong(1, cliente.getId());
+				ps.setLong(2, pedido.getNumero());
+				ps.setDate(3,new java.sql.Date(pedido.getDataVenda().getTime()));
+				ps.setLong(4, pedido.getFormaPagamento().ordinal());
+				result1= ps.executeUpdate();
+				ps2 = DaoUtils.getConnection().prepareStatement(INSERTITEM);
+				// insere os itens do pedido
+				for (ItemPedido item : pedido.getItens()) {
+					Livro livro = item.getLivro();
+					if (livro != null) {
+						ps2.setLong(1, pedido.getId());
+						ps2.setLong(2, livro.getId());
+						ps2.setDouble(3, item.getPercDesconto());
+						ps2.setInt(4, item.getQuantidade());
+						result2 += ps2.executeUpdate();
+					}
+				}
+			}
+			return result1 + result2 > 0;
 		} catch (Exception e) {
 			e.getStackTrace();
 			return false;
 		} finally {
 			DaoUtils.fechaConexoes(conn, ps, null);
+			DaoUtils.fechaConexoes(conn, ps2, null);
 		}
 	}
 	
-	public boolean atualizar(Pedido venda) {
+	public boolean atualizar(Pedido pedido) {
 		Connection conn = null;
 		PreparedStatement ps = null;
+		PreparedStatement ps2 = null;
+		PreparedStatement ps3 = null;
+		int result1 = 0;
+		int result2 = 0;
+		int result3 = 0;
 		try {
+			// atualiza o pedido
 			ps = DaoUtils.getConnection().prepareStatement(UPDATE);
-			ps.setDate(1, new java.sql.Date(venda.getData().getTime()));
-			ps.setDouble(2, venda.getFormaPagamento().ordinal());
-			ps.setLong(3, venda.getId());
-			return ps.executeUpdate() > 0;
+			Cliente cliente = pedido.getCliente();
+			if (cliente != null) {
+				ps.setLong(1, cliente.getId());
+				ps.setLong(2, pedido.getNumero());
+				ps.setDate(3,new java.sql.Date(pedido.getDataVenda().getTime()));
+				ps.setLong(4, pedido.getFormaPagamento().ordinal());
+				ps.setLong(5, pedido.getId());
+				result1= ps.executeUpdate();
+			
+				// deleta os itens do pedido para reinseri-los
+				ps2 = DaoUtils.getConnection().prepareStatement(DELETEITENS);
+				ps2.setLong(1, pedido.getId());
+				result2 = ps2.executeUpdate();
+				
+				// insere os itens do pedido novamente
+				ps3 = DaoUtils.getConnection().prepareStatement(INSERTITEM);
+				for (ItemPedido item : pedido.getItens()) {
+					Livro livro = item.getLivro();
+					if (livro != null) {
+						ps3.setLong(1, pedido.getId());
+						ps3.setLong(2, livro.getId());
+						ps3.setDouble(3, item.getPercDesconto());
+						ps3.setInt(4, item.getQuantidade());
+						result3 += ps3.executeUpdate();
+					}
+				}
+			}
+			return result1 + result2+ result3 > 0;
 		} catch (Exception e) {
 			e.getStackTrace();
 			return false;
 		} finally {
 			DaoUtils.fechaConexoes(conn, ps, null);
+			DaoUtils.fechaConexoes(conn, ps2, null);
+			DaoUtils.fechaConexoes(conn, ps3, null);
 		}
 	}
 	
 	public void deletar(int id) {
 		Connection conn = null;
-		PreparedStatement ps = null;
+		PreparedStatement ps1 = null;
+		PreparedStatement ps2 = null;
 		try {
 			conn = DaoUtils.getConnection();
-			ps = conn.prepareStatement(DELETE);
-			ps.setInt(1, id);
-			ps.executeUpdate();
+			
+			// deletar os itens do pedido
+			ps1 = DaoUtils.getConnection().prepareStatement(DELETEITENS);
+			ps1.setLong(1,id);
+			ps1.executeUpdate();
+			
+			// deletar o pedido
+			ps2 = conn.prepareStatement(DELETE);
+			ps2.setLong(1, id);
+			ps2.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			DaoUtils.fechaConexoes(conn, ps, null);
+			DaoUtils.fechaConexoes(conn, ps1, null);
+			DaoUtils.fechaConexoes(conn, ps2, null);
 		}
 	}	
 	
 	public ArrayList<Pedido> carregaLista() throws Exception {
 		Connection conn = DaoUtils.getConnection();
-		PreparedStatement ps = conn.prepareStatement(SELECT);
-		ResultSet rs = ps.executeQuery();
-		ArrayList<Pedido> vendas = new ArrayList<>();
-		while (rs.next()) {
-			Pedido venda = new Pedido();
-			venda.setId(rs.getLong("id"));
-			venda.setData(new java.util.Date(rs.getDate("data").getTime()));
-			venda.setFormaPagamento(FormaPagamento.values()[rs.getInt("forma_pagamento")]);
-			vendas.add(venda);
-			venda = null;
+		PreparedStatement ps1 = conn.prepareStatement(SELECT);
+		PreparedStatement ps2 = conn.prepareStatement(SELECTITENS);
+		ResultSet rsItens = null;
+		ResultSet rsPedido = ps1.executeQuery();	
+		ArrayList<Pedido> pedidos = new ArrayList<>();
+		while (rsPedido.next()) {
+			//obtem o cliente do pedido
+			Cliente cliente = clienteDAO.selectByPk(rsPedido.getInt("id_cliente"));
+			if (cliente != null) {
+				// carrega dados do pedido
+				Pedido pedido = new Pedido();
+				pedido.setId(rsPedido.getLong("id"));
+				pedido.setCliente(cliente);
+				pedido.setNumero(rsPedido.getLong("numero"));
+				pedido.setDataVenda(new java.util.Date(rsPedido.getDate("data_venda").getTime()));
+				pedido.setFormaPagamento(FormaPagamento.values()[rsPedido.getInt("forma_pagamento")]);
+				
+				// carrega itens do pedido
+				ArrayList<ItemPedido> itens = new ArrayList<>();
+				ps2.setLong(1, rsPedido.getLong("id"));
+				rsItens = ps2.executeQuery();	
+				while (rsItens.next()) {
+					Livro livro = livroDAO.selectByPk(rsItens.getInt("id_livro"));
+					if (livro != null) {
+						ItemPedido item = new ItemPedido();
+						item.setId(rsItens.getLong("id"));
+						item.setLivro(livro);
+						item.setPercDesconto(rsItens.getDouble("percDeconto"));
+						item.setQuantidade(rsItens.getInt("quantidade"));
+						itens.add(item);
+					}	
+				}
+				pedido.setItens(itens);
+				pedidos.add(pedido);
+				pedido = null;
+			}
 		}
-		DaoUtils.fechaConexoes(conn, ps, rs);
-		return vendas;
+		DaoUtils.fechaConexoes(conn, ps1, rsPedido);
+		DaoUtils.fechaConexoes(conn, ps2, rsItens);
+		return pedidos;
 	}
 	
 	public Pedido selectByPk(int id) {
 		Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		Pedido venda = null;
+		PreparedStatement ps1 = null;
+		PreparedStatement ps2 = null;
+		ResultSet rsPedido = null;
+		ResultSet rsItens = null;
+		Pedido pedido = null;
 		try {
 			conn = DaoUtils.getConnection();
-			ps = conn.prepareStatement(SELECTBYPK);
-			ps.setInt(1, id);
-			rs = ps.executeQuery();
-			if (rs.next()) {
-				venda = new Pedido();
-				venda.setId(id);
-				venda.setData(new java.util.Date(rs.getDate("data").getTime()));
-				venda.setFormaPagamento(FormaPagamento.values()[rs.getInt("forma_pagamento")]);
+			ps1 = conn.prepareStatement(SELECTBYPK);
+			ps2 = conn.prepareStatement(SELECTITENS);
+			ps1.setInt(1, id);
+			rsPedido = ps1.executeQuery();
+			if (rsPedido.next()) {
+				//obtem o cliente do pedido
+				Cliente cliente = clienteDAO.selectByPk(rsPedido.getInt("id_cliente"));
+				if (cliente != null) {
+					// carrega dados do pedido
+					pedido = new Pedido();
+					pedido.setId(rsPedido.getLong("id"));
+					pedido.setCliente(cliente);
+					pedido.setNumero(rsPedido.getLong("numero"));
+					pedido.setDataVenda(new java.util.Date(rsPedido.getDate("data_venda").getTime()));
+					pedido.setFormaPagamento(FormaPagamento.values()[rsPedido.getInt("forma_pagamento")]);
+					
+					// carrega itens do pedido
+					ArrayList<ItemPedido> itens = new ArrayList<>();
+					ps2.setLong(1, rsPedido.getLong("id"));
+					rsItens = ps2.executeQuery();	
+					while (rsItens.next()) {
+						Livro livro = livroDAO.selectByPk(rsItens.getInt("id_livro"));
+						if (livro != null) {
+							ItemPedido item = new ItemPedido();
+							item.setId(rsItens.getLong("id"));
+							item.setLivro(livro);
+							item.setPercDesconto(rsItens.getDouble("percDeconto"));
+							item.setQuantidade(rsItens.getInt("quantidade"));
+							itens.add(item);
+						}	
+					}
+					pedido.setItens(itens);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			DaoUtils.fechaConexoes(conn, ps, rs);
+			DaoUtils.fechaConexoes(conn, ps1, rsPedido);
+			DaoUtils.fechaConexoes(conn, ps2, rsItens);
 		}
-		return venda;
-	}
-	
-	public void deletarIngressos(Pedido venda){
-		Connection conn = null;
-		PreparedStatement ps = null;
-		
-		try {
-			ps = DaoUtils.getConnection().prepareStatement(DELETE_INGRESSOS);
-			ps.setInt(1, (int)venda.getId());
-
-			ps.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			DaoUtils.fechaConexoes(conn, ps, null);
-		}
+		return pedido;
 	}
 }
