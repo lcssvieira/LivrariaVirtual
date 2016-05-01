@@ -5,15 +5,33 @@ import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
+
 import dao.EditoraDAO;
+import model.Autor;
 import model.Editora;
 
 public class EditoraControl {
 	EditoraDAO dao;
-	ArrayList<Editora> museus = new ArrayList<>();
+	ArrayList<Editora> editoras = new ArrayList<>();
 
 	public EditoraControl() {
 		dao = new EditoraDAO();
+	}
+	private Editora loadParameters(HttpServletRequest req) {
+		Editora vo = new Editora();
+		vo.setNome(req.getParameter("nome"));
+		vo.setCnpj(req.getParameter("cnpj"));
+		vo.setTelefones(req.getParameter("telfones"));
+		vo.setLogradouro(req.getParameter("logradouro"));
+		vo.setCep(req.getParameter("cep"));
+		vo.setEndereco(req.getParameter("endereco"));
+		vo.setNumero(req.getParameter("numero"));
+		vo.setComplemento(req.getParameter("complemento"));
+		vo.setBairro(req.getParameter("bairro"));
+		vo.setBairro(req.getParameter("cidade"));
+		vo.setUf(req.getParameter("uf"));
+		return vo;
 	}
 
 	public void cadastrar(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -21,68 +39,61 @@ public class EditoraControl {
 			alterar(req, res);
 			return;
 		}
-		Editora vo = loadParameters(req);
-		boolean cadastrado = dao.cadastrar(vo);
+		Editora editora = loadParameters(req);
+		boolean cadastrado = dao.inserir(editora);
 		req.setAttribute("adicionado", cadastrado);
-		String paginaRetorno = "museu.jsp";
+		String paginaRetorno = "editora.jsp";
 		if (cadastrado)
-			paginaRetorno = "museuConsulta.jsp";
+			paginaRetorno = "editoraConsulta.jsp";
 		else
-			req.setAttribute("museuEditar", vo);
-		listarMuseus(req, res);
+			req.setAttribute("editoraEditar", editora);
+		listar(req, res);
 		req.getRequestDispatcher(paginaRetorno).forward(req, res);
 	}
-
-	public void listarMuseus(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		museus = dao.carregaLista();
-		req.setAttribute("listaMuseus", museus);
-		req.getRequestDispatcher("museuConsulta.jsp").forward(req, res);
-	}
-
-	private Editora loadParameters(HttpServletRequest req) {
-		Editora vo = new Editora();
-
-		vo.setNome(req.getParameter("nome"));
-		vo.setNomeResponsavel(req.getParameter("nomeResponsavel"));
-		vo.setFone(req.getParameter("fone"));
-		vo.setFoneResponsavel(req.getParameter("foneResponsavel"));
-		vo.setCep(req.getParameter("cep"));
-		vo.setEndereco(req.getParameter("endereco"));
-		vo.setNumero(req.getParameter("numero"));
-		vo.setComplemento(req.getParameter("complemento"));
-		vo.setEstado(req.getParameter("estado"));
-		vo.setEmail(req.getParameter("email"));
-		vo.setEmailResponsavel(req.getParameter("emailResponsavel"));
-
-		return vo;
+	
+	public void alterar(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		Editora editora = loadParameters(req);
+		editora.setId(Integer.parseInt(req.getParameter("id")));
+		boolean alterado = dao.atualizar(editora);
+		String pageReturn = "editora.jsp";
+		if (alterado) {
+			listar(req, res);
+			return;
+		}
+		req.setAttribute("editoraEditar", editora);
+		req.getRequestDispatcher(pageReturn).forward(req, res);
 	}
 
 	public void deletar(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		dao.deletar(Integer.parseInt(req.getParameter("id")));
-		listarMuseus(req, res);
+		int id = Integer.parseInt(req.getParameter("id"));
+		if (id != 0) 
+			dao.deletar(id);	
+		listar(req, res);
 	}
-
+	
+	public void listar(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		editoras = dao.carregaLista();
+		req.setAttribute("listaEditoras", editoras);
+		req.getRequestDispatcher("editoraConsulta.jsp").forward(req, res);
+	}
+	
 	public void editar(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		int id = Integer.parseInt(req.getParameter("id"));
 		if (id != 0) {
-			Editora museu = dao.selectByPk(id);
-			if (museu != null) {
-				req.setAttribute("museuEditar", museu);
-				req.getRequestDispatcher("museu.jsp").forward(req, res);
+			Editora editora = dao.selectByPk(id);
+			if (editora != null) {
+				req.setAttribute("editoraEditar", editora);
+				req.getRequestDispatcher("editora.jsp").forward(req, res);
 			}
 		}
 	}
-
-	public void alterar(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		Editora vo = loadParameters(req);
-		vo.setId(Integer.parseInt(req.getParameter("id")));
-		boolean alterado = dao.alterar(vo);
-		String pageReturn = "museu.jsp";
-		if (alterado) {
-			listarMuseus(req, res);
-			return;
-		}
-		req.setAttribute("museuEditar", vo);
-		req.getRequestDispatcher(pageReturn).forward(req, res);
-	}
+	
+	public String obterJson (HttpServletRequest req, HttpServletResponse res) throws NumberFormatException, Exception {
+		Editora editora = dao.selectByPk(Integer.parseInt(req.getParameter("id")));
+		String json = new Gson().toJson(editora);
+		res.setContentType("application/json");
+		res.setCharacterEncoding("UTF-8");
+		res.getWriter().print(json);
+		return json;
+}
 }

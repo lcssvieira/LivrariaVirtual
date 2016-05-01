@@ -124,7 +124,7 @@ public class EditoraDAO {
 		}
 	}
 
-	public boolean alterar(Editora editora) {
+	public boolean atualizar(Editora editora) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
