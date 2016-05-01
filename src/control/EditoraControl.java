@@ -4,11 +4,8 @@ import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import com.google.gson.Gson;
-
 import dao.EditoraDAO;
-import model.Autor;
 import model.Editora;
 
 public class EditoraControl {
