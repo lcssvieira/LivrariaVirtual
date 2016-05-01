@@ -4,14 +4,13 @@ import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import com.google.gson.Gson;
-
 import dao.LivroDAO;
 import model.Autor;
 import model.CategoriaLivro;
 import model.Editora;
 import model.Livro;
+import model.LivroFiltro;
 import utils.Utils;
 
 public class LivroControl {
@@ -137,7 +136,14 @@ public class LivroControl {
 	}
 
 	public void listar(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		livros = dao.carregaLista();
+		String filtro = req.getParameter("filtro");
+		if (!Utils.isNullOrEmpty(filtro)) {
+			LivroFiltro tipoFiltro =  LivroFiltro.values()[Integer.parseInt(req.getParameter("tipoFiltro"))];
+			livros = dao.carregaLista(tipoFiltro,filtro);
+		}
+		else
+			livros = dao.carregaLista();
+	
 		req.setAttribute("listaLivros", livros);
 		req.getRequestDispatcher("livroConsulta.jsp").forward(req, res);
 	}

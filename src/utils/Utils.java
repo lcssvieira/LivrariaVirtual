@@ -48,5 +48,9 @@ public class Utils {
 		return "R$ 0,00";
 		
 	}
+	
+	public static boolean isNullOrEmpty(String value) {
+		return value == null || value.trim() == "" || value.trim().length() == 0;
+	}
 
 }

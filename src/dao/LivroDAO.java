@@ -9,16 +9,19 @@ import model.Autor;
 import model.CategoriaLivro;
 import model.Editora;
 import model.Livro;
+import model.LivroFiltro;
 
 public class LivroDAO {
-	private static String tbName = "tb_livro";
+	private static String tbLivro = "tb_livro";
 	private static String tbCategorias = "tb_livros_categorias";
-	private static String tbAutores = "tb_livros_autores";
-	private static String SELECT = String.format("SELECT * FROM {0}",LivroDAO.tbName);
-	private static String SELECTBYPK = String.format("SELECT * FROM {0} WHERE id=?",LivroDAO.tbName);
-	private static String INSERT = String.format("INSERT INTO {0} (id_editora, isbn,titulo,formato,sumario,resumo,data_publicacao, preco_custo,preco_venda, margem_lucro, quantidade_estoque,estoque_minimo, numero_paginas) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",LivroDAO.tbName);
-	private static String DELETE = String.format("DELETE FROM {0} where id = ?",LivroDAO.tbName);
-	private static String UPDATE = String.format("UPDATE {0} SET id_editora=?, isbn=?,titulo=?,formato=?,sumario=?,resumo=?,data_publicacao=?, preco_custo=?,preco_venda=?, margem_lucro=?, quantidade_estoque=?,estoque_minimo=?, numero_paginas =? where id = ?",LivroDAO.tbName);
+	private static String tbAutores = "tb_livros_autores";	
+	private static String tbEditora = "tb_editora";
+	private static String tbCategoria = "tb_categoria";
+	private static String tbAutor = "tb_autor";	
+	private static String SELECTBYPK = String.format("SELECT * FROM {0} WHERE id=?",LivroDAO.tbLivro);
+	private static String INSERT = String.format("INSERT INTO {0} (id_editora, isbn,titulo,formato,sumario,resumo,data_publicacao, preco_custo,preco_venda, margem_lucro, quantidade_estoque,estoque_minimo, numero_paginas) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",LivroDAO.tbLivro);
+	private static String DELETE = String.format("DELETE FROM {0} where id = ?",LivroDAO.tbLivro);
+	private static String UPDATE = String.format("UPDATE {0} SET id_editora=?, isbn=?,titulo=?,formato=?,sumario=?,resumo=?,data_publicacao=?, preco_custo=?,preco_venda=?, margem_lucro=?, quantidade_estoque=?,estoque_minimo=?, numero_paginas =? where id = ?",LivroDAO.tbLivro);
 
 	private static String INSERTCATEGORIAS = String.format("INSERT INTO {0} (id_livro,id_categoria) VALUES(?,?)", LivroDAO.tbCategorias);
 	private static String INSERTAUTORES = String.format("INSERT INTO {0} (id_livro,id_autor) VALUES(?,?)", LivroDAO.tbAutores);
@@ -27,6 +30,7 @@ public class LivroDAO {
 	private static String SELECTCATEGORIAS = String.format("SELECT * FROM {0} where id_livro = ?",LivroDAO.tbCategorias);
 	private static String SELECTAUTORES = String.format("SELECT * FROM {0} where id_livro = ?",LivroDAO.tbAutores);
 	
+	private static String SELECT = String.format("SELECT * FROM {0}",LivroDAO.tbLivro);
 	private CategoriaLivroDAO categoriaDAO = new CategoriaLivroDAO();
 	private AutorDAO autorDAO = new AutorDAO();
 	
@@ -80,10 +84,25 @@ public class LivroDAO {
 			DaoUtils.fechaConexoes(conn, ps3, null);
 		}
 	}
-
+	
 	public ArrayList<Livro> carregaLista() throws Exception {
+		return carregaLista(LivroFiltro.nenhum, "");
+	}
+
+	public ArrayList<Livro> carregaLista(LivroFiltro filtro, String parametro) throws Exception {
+		String statement = SELECT;
+		
+		if (filtro == LivroFiltro.titulo) 
+			statement = String.format("{0} WHERE titulo like '%{1}%'", statement, parametro);
+		else if (filtro == LivroFiltro.editora)
+			statement = String.format("{0}, {2} WHERE {1}.id_editora = {2}.id AND {2}.nome like '%{3}%' ", statement, tbLivro,  tbEditora, parametro);
+		else if (filtro == LivroFiltro.categoria)
+			statement = String.format("{0}, {1}, {2} WHERE {1}.id = {2}.id_livro AND {2}.id_categoria = {3}.id AND {3}.descricao like '%{4}%'  ", statement, tbLivro, tbCategorias,  tbCategoria, parametro);
+		else if (filtro == LivroFiltro.autor)
+			statement = String.format("{0}, {1}, {2} WHERE {1}.id = {2}.id_livro AND {2}.id_autor= {3}.id AND {3}.nome like '%{4}%'  ", statement, tbLivro, tbAutores,  tbAutor, parametro);
+
 		Connection conn = DaoUtils.getConnection();
-		PreparedStatement ps = conn.prepareStatement(SELECT);
+		PreparedStatement ps = conn.prepareStatement(statement);
 		PreparedStatement ps2 = null;
 		PreparedStatement ps3 = null;
 		ResultSet rs = ps.executeQuery();
