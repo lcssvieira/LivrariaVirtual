@@ -51,7 +51,7 @@ public class AutorControl {
 		Autor autor = loadParameters(req);
 		autor.setId(Integer.parseInt(req.getParameter("id")));
 		boolean alterado = dao.atualizar(autor);
-		String pageReturn = "exposicao.jsp";
+		String pageReturn = "autor.jsp";
 		if (alterado) {
 			listar(req, res);
 			return;
@@ -79,6 +79,7 @@ public class AutorControl {
 			Autor autor = dao.selectByPk(id);
 			if (autor != null) {
 				req.setAttribute("autorEditar", autor);
+				req.getRequestDispatcher("autor.jsp").forward(req, res);
 			};
 		}
 	}
