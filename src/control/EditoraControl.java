@@ -30,6 +30,9 @@ public class EditoraControl {
 		vo.setUf(req.getParameter("uf"));
 		return vo;
 	}
+	public Editora selectById(int id) throws Exception {
+		return dao.selectByPk(id);
+	}
 
 	public void cadastrar(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		if (Boolean.parseBoolean(req.getParameter("alterar"))) {
@@ -92,5 +95,5 @@ public class EditoraControl {
 		res.setCharacterEncoding("UTF-8");
 		res.getWriter().print(json);
 		return json;
-}
+	}
 }
