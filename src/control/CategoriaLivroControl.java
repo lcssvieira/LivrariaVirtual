@@ -16,6 +16,18 @@ public class CategoriaLivroControl {
 		dao = new CategoriaLivroDAO();
 		categorias = new ArrayList<>();
 	}
+	
+	// cria um  objeto com dados enviados por parametro
+	private CategoriaLivro loadParameters(HttpServletRequest req) throws ParseException {
+		CategoriaLivro categoria = new CategoriaLivro();
+		categoria.setDescricao(req.getParameter("descricao"));
+		return categoria;
+	}
+	
+	// obtem o obejto a partir do seu ID
+	public CategoriaLivro selectById(int id) throws Exception {
+		return dao.selectByPk(id);
+	}
 
 	// cadastra um novo objeto
 	public void cadastrar(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -27,31 +39,38 @@ public class CategoriaLivroControl {
 		boolean cadastrado = dao.inserir(categoria);
 		req.setAttribute("adicionado", cadastrado);
 		if (cadastrado)
-			listarCategorias(req, res);
+			listar(req, res);
 		else {
 			req.setAttribute("exposicaoEditar", categoria);
 			req.getRequestDispatcher("exposicao.jsp").forward(req, res);
 		}
 	}
-	// carrega lista de objetos cadastrados , a partir do banco de dados
-	public void listarCategorias(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		categorias = dao.carregaLista();
-		req.setAttribute("listaCategorias", categorias);
-		req.getRequestDispatcher("categoriaConsulta.jsp").forward(req, res);
-	}
-	// cria um  objeto com dados enviados por parametro
-	private CategoriaLivro loadParameters(HttpServletRequest req) throws ParseException {
-		CategoriaLivro categoria = new CategoriaLivro();
-		categoria.setDescricao(req.getParameter("descricao"));
-		return categoria;
+	// atualiza um objeto
+	public void alterar(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		CategoriaLivro categoria = loadParameters(req);
+		categoria.setId(Long.parseLong(req.getParameter("id")));
+		boolean alterado = dao.atualizar(categoria);
+		String pageReturn = "categoria.jsp";
+		if (alterado) {
+			listar(req, res);
+			return;
+		}
+		req.setAttribute("categoriaEditar", categoria);
+		req.getRequestDispatcher(pageReturn).forward(req, res);
 	}
 	// deleta um objeto
 	public void deletar(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		int id = Integer.parseInt(req.getParameter("id"));
-		if (id != 0) 
-			dao.deletar(id);
-		
-		listarCategorias(req, res);
+			int id = Integer.parseInt(req.getParameter("id"));
+			if (id != 0) 
+				dao.deletar(id);
+			
+			listar(req, res);
+		}
+	// carrega lista de objetos cadastrados , a partir do banco de dados
+	public void listar(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		categorias = dao.carregaLista();
+		req.setAttribute("listaCategorias", categorias);
+		req.getRequestDispatcher("categoriaConsulta.jsp").forward(req, res);
 	}
 	// carrega o CRUD com dados de um objeto
 	public void editar(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -64,32 +83,14 @@ public class CategoriaLivroControl {
 			}
 		}
 	}
-	// atualiza um objeto
-	public void alterar(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		CategoriaLivro categoria = loadParameters(req);
-		categoria.setId(Long.parseLong(req.getParameter("id")));
-		boolean alterado = dao.atualizar(categoria);
-		String pageReturn = "categoria.jsp";
-		if (alterado) {
-			listarCategorias(req, res);
-			return;
-		}
-		req.setAttribute("categoriaEditar", categoria);
-		req.getRequestDispatcher(pageReturn).forward(req, res);
-	}
 
 	// obtem o objeto em formato Json
-	public String getCategoriaJson (HttpServletRequest req, HttpServletResponse res) throws NumberFormatException, Exception {
+	public String obterJson (HttpServletRequest req, HttpServletResponse res) throws NumberFormatException, Exception {
 		CategoriaLivro categoria = dao.selectByPk(Integer.parseInt(req.getParameter("id")));
 		String json = new Gson().toJson(categoria);
 		res.setContentType("application/json");
 		res.setCharacterEncoding("UTF-8");
 		res.getWriter().print(json);
 		return json;
-	}
-	
-	// obtem o obejto a partir do seu ID
-	public CategoriaLivro selectById(int id) throws Exception {
-		return dao.selectByPk(id);
 	}
 }
