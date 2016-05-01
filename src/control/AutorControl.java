@@ -1,31 +1,34 @@
 package control;
 
 import java.text.ParseException;
-
+import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import com.google.gson.Gson;
 import dao.AutorDAO;
-import dao.EditoraDAO;
-import dao.LivroDAO;
 import model.Autor;
 import utils.MuseuUtils;
 
 public class AutorControl {
 	AutorDAO dao;
-	Autor autor;
+	ArrayList<Autor> autores;
 
 	public AutorControl() {
 		dao = new AutorDAO();
-		autor = new Autor();
+		autores = new ArrayList<>();
+	}	
+	private Autor loadParameters(HttpServletRequest req) throws ParseException {
+		Autor autor = new Autor();
+		autor.setNome(req.getParameter("nome"));
+		autor.setLocalNascimento(req.getParameter("local_nascimento"));
+		autor.setLocalFalecimento(req.getParameter("local_falecimento"));
+		autor.setBiografia(req.getParameter("biografia"));
+		autor.setDataNascimento(MuseuUtils.converteStringEmData(req.getParameter("data_nascimento")));
+		autor.setDataFalecimento(MuseuUtils.converteStringEmData(req.getParameter("data_falecimento")));
+		return autor;
 	}
-
-	public void selectCadastrar(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		LivroDAO livroDAO = new LivroDAO();
-		EditoraDAO museuDAO = new EditoraDAO();
-		//req.setAttribute("listaObras", obraDAO.carregaListaEmprestimo(0));
-		req.setAttribute("listaObras", livroDAO.carregaLista());
-		req.setAttribute("listaMuseus", museuDAO.carregaLista());
-		req.getRequestDispatcher("autor.jsp").forward(req, res);
+	public Autor selectById(int id) throws Exception {
+		return dao.selectByPk(id);
 	}
 
 	public void cadastrar(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -33,67 +36,59 @@ public class AutorControl {
 			alterar(req, res);
 			return;
 		}
-		Autor vo = loadParameters(req);
-		boolean cadastrado = dao.cadastrar(vo);
+		Autor autor = loadParameters(req);
+		boolean cadastrado = dao.inserir(autor);
 		req.setAttribute("inserido", cadastrado);
-		if (cadastrado){
-			new LivroDAO().atualizarEmprestado(vo.getObra(), 1);
-			listarEmprestimos(req, res);}
+		if (cadastrado){;
+			listar(req, res);}
 		else {
-			req.setAttribute("autorEditar", vo);
+			req.setAttribute("autorEditar", autor);
 			req.getRequestDispatcher("autor.jsp").forward(req, res);
 		}
 	}
 
-	private Autor loadParameters(HttpServletRequest req) throws ParseException {
-		Autor vo = new Autor();
-		vo.setMuseu(new EditoraDAO().selectByPk(Integer.parseInt(req.getParameter("museu"))));
-		vo.setObra(new LivroDAO().selectByPk(Integer.parseInt(req.getParameter("obra"))));
-		vo.setDataInicio(MuseuUtils.converteStringEmData(req.getParameter("dataInicio")));
-		vo.setDataFim(MuseuUtils.converteStringEmData(req.getParameter("dataFim")));
-		vo.setDescricao(req.getParameter("descricao"));
-		return vo;
-	}
-
 	public void alterar(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		Autor vo = loadParameters(req);
-		vo.setId(Integer.parseInt(req.getParameter("id")));
-		boolean alterado = dao.alterar(vo);
+		Autor autor = loadParameters(req);
+		autor.setId(Integer.parseInt(req.getParameter("id")));
+		boolean alterado = dao.atualizar(autor);
 		String pageReturn = "exposicao.jsp";
 		if (alterado) {
-			listarEmprestimos(req, res);
+			listar(req, res);
 			return;
 		}
-		req.setAttribute("autorEditar", vo);
+		req.setAttribute("autorEditar", autor);
 		req.getRequestDispatcher(pageReturn).forward(req, res);
-
-	}
-
-	public void listarEmprestimos(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		req.setAttribute("listaAutores", dao.carregaLista());
-		req.getRequestDispatcher("autorConsulta.jsp").forward(req, res);
 	}
 
 	public void deletar(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		int id = Integer.parseInt(req.getParameter("id"));
-		Autor emprestimo = dao.selectByPk(id);
-		if (id != 0) {
-			if (dao == null)
-				dao = new AutorDAO();
-			dao.deletar(id);
-			new LivroDAO().atualizarEmprestado(emprestimo.getObra(), 0);
-		}
-		listarEmprestimos(req, res);
+		if (id != 0) 
+			dao.deletar(id);	
+		listar(req, res);
+	}
+	
+	public void listar(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		autores = dao.carregaLista();
+		req.setAttribute("listaAutores", autores);
+		req.getRequestDispatcher("autorConsulta.jsp").forward(req, res);
 	}
 
 	public void editar(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		int id = Integer.parseInt(req.getParameter("id"));
 		if (id != 0) {
-			Autor emprestimo = dao.selectByPk(id);
-			if (emprestimo != null) {
-				req.setAttribute("autorEditar", emprestimo);
-			}
-			selectCadastrar(req, res);
+			Autor autor = dao.selectByPk(id);
+			if (autor != null) {
+				req.setAttribute("autorEditar", autor);
+			};
 		}
+	}
+	
+	public String obterJson (HttpServletRequest req, HttpServletResponse res) throws NumberFormatException, Exception {
+			Autor autor = dao.selectByPk(Integer.parseInt(req.getParameter("id")));
+			String json = new Gson().toJson(autor);
+			res.setContentType("application/json");
+			res.setCharacterEncoding("UTF-8");
+			res.getWriter().print(json);
+			return json;
 	}
 }
