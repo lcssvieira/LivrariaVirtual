@@ -4,7 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class MuseuUtils {
+public class Utils {
 	static SimpleDateFormat padrao = new SimpleDateFormat("dd/MM/yyyy");
 
 	public static String converteDateEmString(Date data) throws ParseException {

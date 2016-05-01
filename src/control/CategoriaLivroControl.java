@@ -45,6 +45,7 @@ public class CategoriaLivroControl {
 			req.getRequestDispatcher("exposicao.jsp").forward(req, res);
 		}
 	}
+	
 	// atualiza um objeto
 	public void alterar(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		CategoriaLivro categoria = loadParameters(req);
@@ -58,6 +59,7 @@ public class CategoriaLivroControl {
 		req.setAttribute("categoriaEditar", categoria);
 		req.getRequestDispatcher(pageReturn).forward(req, res);
 	}
+	
 	// deleta um objeto
 	public void deletar(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			int id = Integer.parseInt(req.getParameter("id"));
@@ -66,12 +68,14 @@ public class CategoriaLivroControl {
 			
 			listar(req, res);
 		}
+	
 	// carrega lista de objetos cadastrados , a partir do banco de dados
 	public void listar(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		categorias = dao.carregaLista();
 		req.setAttribute("listaCategorias", categorias);
 		req.getRequestDispatcher("categoriaConsulta.jsp").forward(req, res);
 	}
+	
 	// carrega o CRUD com dados de um objeto
 	public void editar(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		int id = Integer.parseInt(req.getParameter("id"));

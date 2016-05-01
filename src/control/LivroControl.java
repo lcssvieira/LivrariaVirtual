@@ -12,7 +12,7 @@ import model.Autor;
 import model.CategoriaLivro;
 import model.Editora;
 import model.Livro;
-import utils.MuseuUtils;
+import utils.Utils;
 
 public class LivroControl {
 	LivroDAO dao = null;
@@ -22,6 +22,7 @@ public class LivroControl {
 		dao = new LivroDAO();
 		livros = new ArrayList<>();
 	}	
+	
 	private Livro loadParameters(HttpServletRequest req) {
 		try {
 			Livro livro = new Livro();
@@ -31,7 +32,7 @@ public class LivroControl {
 			AutorControl autorCtrl = new AutorControl();
 			
 			// obtem editora
-			Editora editora = editoraCtrl.selectById(Integer.parseInt(req.getParameter("EditoraId")));
+			Editora editora = editoraCtrl.selectById(Integer.parseInt(req.getParameter("editoraId")));
 			
 			// obtem categorias
 			String [] categoriasIds = req.getParameter("categorias").split(";");
@@ -57,13 +58,13 @@ public class LivroControl {
 			livro.setFormato(req.getParameter("formato"));			
 			livro.setSumario(req.getParameter("sumario"));
 			livro.setResumo(req.getParameter("resumo"));
-			livro.setDataPublicacao(MuseuUtils.converteStringEmData(req.getParameter("data_publicacao")));
+			livro.setDataPublicacao(Utils.converteStringEmData(req.getParameter("data_publicacao")));
 			livro.setQuantidadeEstoque(Integer.parseInt(req.getParameter("quantidade_estoque")));
 			livro.setEstoqueMinimo(Integer.parseInt(req.getParameter("estoque_minimo")));
 			livro.setNumeroPaginas(Integer.parseInt(req.getParameter("numero_paginas")));
-			Double precoCusto = MuseuUtils.converteMoneyTextEmDouble(req.getParameter("preco_custo"));
-			Double precoVenda = MuseuUtils.converteMoneyTextEmDouble(req.getParameter("preco_venda"));
-			Double margemLucro = MuseuUtils.converteMoneyTextEmDouble(req.getParameter("margem_lucro"));
+			Double precoCusto = Utils.converteMoneyTextEmDouble(req.getParameter("preco_custo"));
+			Double precoVenda = Utils.converteMoneyTextEmDouble(req.getParameter("preco_venda"));
+			Double margemLucro = Utils.converteMoneyTextEmDouble(req.getParameter("margem_lucro"));
 			livro.setPrecoCusto(precoCusto);
 			livro.setPrecoVenda(precoVenda);
 			livro.setMargemLucro(margemLucro);
@@ -107,6 +108,7 @@ public class LivroControl {
 		}
 		
 	}
+	
 	public void alterar(HttpServletRequest req, HttpServletResponse res) throws Exception {
 
 		Livro livro = loadParameters(req);
@@ -150,6 +152,7 @@ public class LivroControl {
 			}
 		}
 	}
+	
 	public String obterJson (HttpServletRequest req, HttpServletResponse res) throws NumberFormatException, Exception {
 		Livro livro = dao.selectByPk(Integer.parseInt(req.getParameter("id")));
 		String json = new Gson().toJson(livro);

@@ -9,7 +9,7 @@ import com.google.gson.Gson;
 
 import dao.ClienteDAO;
 import model.Cliente;
-import utils.MuseuUtils;
+import utils.Utils;
 
 public class ClienteControl {
 	ClienteDAO dao = null;
@@ -35,7 +35,7 @@ public class ClienteControl {
 			cliente.setCidade(req.getParameter("cidade"));
 			cliente.setUf(req.getParameter("uf"));
 			cliente.setSexo(req.getParameter("sexo"));
-			cliente.setDataNascimento(MuseuUtils.converteStringEmData(req.getParameter("data_nascimento")));
+			cliente.setDataNascimento(Utils.converteStringEmData(req.getParameter("data_nascimento")));
 			return cliente;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -106,7 +106,6 @@ public class ClienteControl {
 		req.getRequestDispatcher("clienteConsulta.jsp").forward(req, res);
 	}
 
-
 	public void editar(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		int id = Integer.parseInt(req.getParameter("id"));
 		if (id != 0) {
@@ -119,6 +118,7 @@ public class ClienteControl {
 			}
 		}
 	}
+	
 	public String obterJson (HttpServletRequest req, HttpServletResponse res) throws NumberFormatException, Exception {
 		Cliente cliente = dao.selectByPk(Integer.parseInt(req.getParameter("id")));
 		String json = new Gson().toJson(cliente);

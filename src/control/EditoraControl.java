@@ -15,6 +15,7 @@ public class EditoraControl {
 	public EditoraControl() {
 		dao = new EditoraDAO();
 	}
+	
 	private Editora loadParameters(HttpServletRequest req) {
 		Editora vo = new Editora();
 		vo.setNome(req.getParameter("nome"));
@@ -30,6 +31,7 @@ public class EditoraControl {
 		vo.setUf(req.getParameter("uf"));
 		return vo;
 	}
+	
 	public Editora selectById(int id) throws Exception {
 		return dao.selectByPk(id);
 	}

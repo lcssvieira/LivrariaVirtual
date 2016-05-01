@@ -72,6 +72,7 @@ public class UsuarioControl {
 		req.setAttribute("listaUsuarios",usuarios);
 		req.getRequestDispatcher("usuarioConsulta.jsp").forward(req, res);
 	}
+	
 	public void editar(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		int id = Integer.parseInt(req.getParameter("id"));
 		if (id != 0) {
@@ -82,6 +83,7 @@ public class UsuarioControl {
 			}
 		}
 	}
+	
 	public String obterJson (HttpServletRequest req, HttpServletResponse res) throws NumberFormatException, Exception {
 		Usuario usuario = dao.selectByPk(Integer.parseInt(req.getParameter("id")));
 		String json = new Gson().toJson(usuario);

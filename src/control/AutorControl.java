@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 import dao.AutorDAO;
 import model.Autor;
-import utils.MuseuUtils;
+import utils.Utils;
 
 public class AutorControl {
 	AutorDAO dao;
@@ -17,16 +17,18 @@ public class AutorControl {
 		dao = new AutorDAO();
 		autores = new ArrayList<>();
 	}	
+	
 	private Autor loadParameters(HttpServletRequest req) throws ParseException {
 		Autor autor = new Autor();
 		autor.setNome(req.getParameter("nome"));
 		autor.setLocalNascimento(req.getParameter("local_nascimento"));
 		autor.setLocalFalecimento(req.getParameter("local_falecimento"));
 		autor.setBiografia(req.getParameter("biografia"));
-		autor.setDataNascimento(MuseuUtils.converteStringEmData(req.getParameter("data_nascimento")));
-		autor.setDataFalecimento(MuseuUtils.converteStringEmData(req.getParameter("data_falecimento")));
+		autor.setDataNascimento(Utils.converteStringEmData(req.getParameter("data_nascimento")));
+		autor.setDataFalecimento(Utils.converteStringEmData(req.getParameter("data_falecimento")));
 		return autor;
 	}
+	
 	public Autor selectById(int id) throws Exception {
 		return dao.selectByPk(id);
 	}
