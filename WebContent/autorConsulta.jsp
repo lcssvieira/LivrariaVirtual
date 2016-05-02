@@ -50,10 +50,10 @@
 									<td><c:out value="${exposicao.dataInicioFormatada}"></c:out></td>
 									<td><c:out value="${exposicao.dataFimFormatada}"></c:out></td>
 									<td><c:out value="${exposicao.museu.getNome()}"></c:out></td>
-									<td><a href="#"
-										onclick="editar('${exposicao.id}','ExposicaoControl');return false;">Editar</a></td>
-									<td><a href="#"
-										onclick="deletar('${exposicao.id}','ExposicaoControl');return false;">Excluir</a></td>
+									<td><a href="#" class="icon fa-pencil-square-o
+										onclick="editar('${exposicao.id}','ExposicaoControl');return false;">  Editar</a></td>
+									<td><a href="#" class="icon fa-eraser
+										onclick="deletar('${exposicao.id}','ExposicaoControl');return false;">  Excluir</a></td>
 								</tr>
 							</c:forEach>
 						</tbody>

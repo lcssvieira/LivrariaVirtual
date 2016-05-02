@@ -46,10 +46,10 @@
 									<td><c:out value="${museu.nomeResponsavel}"></c:out></td>
 									<td><c:out value="${museu.fone}"></c:out></td>
 									<td><c:out value="${museu.foneResponsavel}"></c:out></td>
-									<td><a href="#"
-										onclick="editar('${museu.id}','MuseuControl');return false;">Editar</a></td>
-									<td><a href="#"
-										onclick="deletar('${museu.id}','MuseuControl');return false;">Excluir</a></td>
+									<td><a href="#" class="icon fa-pencil-square-o
+										onclick="editar('${museu.id}','MuseuControl');return false;">  Editar</a></td>
+									<td><a href="#" class="icon fa-eraser
+										onclick="deletar('${museu.id}','MuseuControl');return false;">  Excluir</a></td>
 								</tr>
 							</c:forEach>
 						</tbody>

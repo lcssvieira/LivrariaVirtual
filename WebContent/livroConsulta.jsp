@@ -48,10 +48,10 @@
 									<td><c:out value="${obra.artista}"></c:out></td>
 									<td><c:out value="${obra.tipo}"></c:out></td>
 									<td><c:out value="${obra.dataFormatada}"></c:out></td>
-									<td><a href="#"
-										onclick="editar('${obra.id}','ObrasControl');return false;">Editar</a></td>
-									<td><a href="#"
-										onclick="deletar('${obra.id}','ObrasControl');return false;">Excluir</a></td>
+									<td><a href="#" class="icon fa-pencil-square-o
+										onclick="editar('${obra.id}','ObrasControl');return false;">  Editar</a></td>
+									<td><a href="#" class="icon fa-eraser
+										onclick="deletar('${obra.id}','ObrasControl');return false;">  Excluir</a></td>
 								</tr>
 							</c:forEach>
 						</tbody>

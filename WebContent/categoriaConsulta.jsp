@@ -43,10 +43,10 @@
 								<tr>
 									<td style="display:none"><c:out value="${categoria.getId()}"></c:out></td>
 									<td><c:out value="${categoria.getDescricao()}"></c:out></td>
-									<td><a href="#"
-										onclick="editar('${categoria.getId()}','CategoiaLivroControl');return false;">Editar</a></td>
-									<td><a href="#"
-										onclick="deletar('${categoria.getId()}','CategoriaLivroControl');return false;">Excluir</a></td>
+									<td><a href="#" class="icon fa-pencil-square-o
+										onclick="editar('${categoria.getId()}','CategoiaLivroControl');return false;">  Editar</a></td>
+									<td><a href="#" class="icon fa-eraser
+										onclick="deletar('${categoria.getId()}','CategoriaLivroControl');return false;">  Excluir</a></td>
 								</tr>
 							</c:forEach>
 						</tbody>

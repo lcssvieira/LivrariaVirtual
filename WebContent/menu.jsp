@@ -4,7 +4,7 @@
 
 		<!-- Logo -->
 		<h1 id="logo">
-			<a href="./inicio.html">Livraria Online</a>
+			<a href="./inicio.jsp">Livraria Online</a>
 		</h1>
 
 		<!-- Nav -->
