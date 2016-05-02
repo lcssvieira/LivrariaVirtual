@@ -17,19 +17,19 @@ public class EditoraControl {
 	}
 	
 	private Editora loadParameters(HttpServletRequest req) {
-		Editora vo = new Editora();
-		vo.setNome(req.getParameter("nome"));
-		vo.setCnpj(req.getParameter("cnpj"));
-		vo.setTelefones(req.getParameter("telfones"));
-		vo.setLogradouro(req.getParameter("logradouro"));
-		vo.setCep(req.getParameter("cep"));
-		vo.setEndereco(req.getParameter("endereco"));
-		vo.setNumero(req.getParameter("numero"));
-		vo.setComplemento(req.getParameter("complemento"));
-		vo.setBairro(req.getParameter("bairro"));
-		vo.setBairro(req.getParameter("cidade"));
-		vo.setUf(req.getParameter("uf"));
-		return vo;
+		Editora editora = new Editora();
+		editora.setNome(req.getParameter("nome"));
+		editora.setCnpj(req.getParameter("cnpj"));
+		editora.setTelefones(req.getParameter("telfones"));
+		editora.setLogradouro(req.getParameter("logradouro"));
+		editora.setCep(req.getParameter("cep"));
+		editora.setEndereco(req.getParameter("endereco"));
+		editora.setNumero(req.getParameter("numero"));
+		editora.setComplemento(req.getParameter("complemento"));
+		editora.setBairro(req.getParameter("bairro"));
+		editora.setBairro(req.getParameter("cidade"));
+		editora.setUf(req.getParameter("uf"));
+		return editora;
 	}
 	
 	public Editora selectById(int id) throws Exception {

@@ -32,27 +32,21 @@
 						<thead>
 							<tr>
 								<th style="display:none">ID</th>
-								<th>Data do emprestimo</th>
-								<th>Data prevista p/ devolução</th>
-								<th>Obra emprestada</th>
-								<th>Museu solicitante</th>
+								<th>Descrição</th>
 								<th colspan="2">Ações</th>
 							</tr>
 						</thead>
 						<tbody>
-							<!-- Loop para popular tabela de exposições -->
-							<c:forEach items="${requestScope.listaEmprestimos}"
-								var="emprestimo">
+							<!-- Loop para popular tabela de categorias -->
+							<c:forEach items="${requestScope.listaCategorias}"
+								var="categoria">
 								<tr>
-									<td style="display:none"><c:out value="${emprestimo.id}"></c:out></td>
-									<td><c:out value="${emprestimo.dataInicioFormatada}"></c:out></td>
-									<td><c:out value="${emprestimo.dataFimFormatada}"></c:out></td>
-									<td><c:out value="${emprestimo.obra.nome}"></c:out></td>
-									<td><c:out value="${emprestimo.museu.getNome()}"></c:out></td>
+									<td style="display:none"><c:out value="${categoria.getId()}"></c:out></td>
+									<td><c:out value="${categoria.getDescricao()}"></c:out></td>
 									<td><a href="#"
-										onclick="editar('${emprestimo.id}','EmprestimoControl');return false;">Editar</a></td>
+										onclick="editar('${categoria.getId()}','CategoiaLivroControl');return false;">Editar</a></td>
 									<td><a href="#"
-										onclick="deletar('${emprestimo.id}','EmprestimoControl');return false;">Excluir</a></td>
+										onclick="deletar('${categoria.getId()}','CategoriaLivroControl');return false;">Excluir</a></td>
 								</tr>
 							</c:forEach>
 						</tbody>
