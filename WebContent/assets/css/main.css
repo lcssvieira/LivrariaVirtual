@@ -1332,6 +1332,7 @@ input[type="button"].alt:active, input[type="submit"].alt:active, input[type="re
 .icon {
 	position: relative;
 	text-decoration: none;
+	cursor:pointer;
 }
 
 .icon:before {

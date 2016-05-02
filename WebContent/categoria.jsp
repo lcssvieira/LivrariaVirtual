@@ -35,7 +35,7 @@
 						</div>
 					</c:if>
 					<form method="POST" action="ServletLivraria.do">
-						<input type="hidden" name="classe" value="CatgoriaControl" /> <input
+						<input type="hidden" name="classe" value="CategoriaLivroControl" /> <input
 							type="hidden" name="metodo" value="cadastrar" />
 						<c:if test="${not empty categoriaEditar}">
 							<input type="hidden" name="alterar" value="true" />

@@ -44,7 +44,7 @@
 									<td style="display:none"><c:out value="${categoria.getId()}"></c:out></td>
 									<td><c:out value="${categoria.getDescricao()}"></c:out></td>
 									<td><a class="icon fa-pencil-square-o href="#"
-										onclick="editar('${categoria.getId()}','CategoiaLivroControl');return false;">  Editar</a></td>
+										onclick="editar('${categoria.getId()}','CategoriaLivroControl');return false;">  Editar</a></td>
 									<td><a class="icon fa-eraser href="#"
 										onclick="deletar('${categoria.getId()}','CategoriaLivroControl');return false;">  Excluir</a></td>
 								</tr>
