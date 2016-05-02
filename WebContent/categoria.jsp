@@ -34,63 +34,19 @@
 							Insira-os novamente.
 						</div>
 					</c:if>
-					<form method="POST" action="ServletMuseu.do">
-						<input type="hidden" name="classe" value="EmprestimoControl" /> <input
+					<form method="POST" action="ServletLivraria.do">
+						<input type="hidden" name="classe" value="CatgoriaControl" /> <input
 							type="hidden" name="metodo" value="cadastrar" />
 						<c:if test="${not empty categoriaEditar}">
 							<input type="hidden" name="alterar" value="true" />
 							<input type="hidden" name="id"
-								value="<c:out value="${categoriaEditar.id}"/>" />
+								value="<c:out value="${categoriaEditar.getId()}"/>" />
 						</c:if>
 						<div class="row 50%">
-							<div class="6u 12u(mobile)">
-								Museu solicitante: <select id="museu" name="museu">
-									<option value="">Selecione um museu</option>
-									<c:forEach items="${listaMuseus}" var="museu">
-										<option value="${museu.id}">${museu.nome}</option>
-									</c:forEach>
-								</select>
-							</div>
-							<div class="6u 12u(mobile)">
-								Obra: <select id="obra" name="obra">
-								 <option value="">Selecione uma obra</option>
-									<c:forEach items="${listaObras}" var="obra">
-										<option value="${obra.id}">${obra.nome}</option>
-									</c:forEach>
-								</select>
-							</div>
-						</div>
-						<div class="row 50%">
-							<div class="6u 12u(mobile)">
-								Data do emprestimo:
-									<div class="input-group date">
-									<input id="dataInicio" type="text" class="form-control"
-										style="padding: 1.75em 1em 1.75em 1em;"
-										placeholder="dd/mm/aaaa" name="data"
-										value="<c:out value="${emprestimoEditar.dataInicioFormatada}"/>"
-										><span
-										class="input-group-addon"><i
-										class="glyphicon glyphicon-th"></i></span>
-									</div>
-							</div>
-							<div class="6u 12u(mobile)">
-								Data prevista p/ devolução:
-									<div class="input-group date">
-									<input id="dataFim" type="text" class="form-control"
-										style="padding: 1.75em 1em 1.75em 1em;"
-										placeholder="dd/mm/aaaa" name="data"
-										value="<c:out value="${emprestimoEditar.dataFimFormatada}"/>"
-										><span
-										class="input-group-addon"><i
-										class="glyphicon glyphicon-th"></i></span>
-								</div>
-							</div>
-						</div>
-						<div class="row 50%">
 							<div class="12u">
-								Descrição:
-								<textarea name="descricao" placeholder="Descrição"><c:out
-										value="${emprestimoEditar.descricao}" /></textarea>
+								Descrição: <input name="descricao"
+									placeholder="Descrição de categoria" type="text"
+									value="<c:out value="${categoriaEditar.getDescricao()}"/>" />
 							</div>
 						</div>
 						<div class="row 50%">

@@ -45,9 +45,9 @@
 									<td><c:out value="${visitante.id}"></c:out></td>
 									<td><c:out value="${visitante.nome}"></c:out></td>
 									<td><c:out value="${visitante.dataFormatada}"></c:out></td>
-									<td><a href="#" class="icon fa-pencil-square-o
+									<td><a  class="icon fa-pencil-square-o href="#"
 										onclick="editar('${visitante.id}','VisitanteControl');return false;">  Editar</a></td>
-									<td><a href="#" class="icon fa-eraser
+									<td><a class="icon fa-eraser href="#"
 										onclick="deletar('${visitante.id}','VisitanteControl');return false;">Excluir</a></td>
 								</tr>
 							</c:forEach>

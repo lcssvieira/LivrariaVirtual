@@ -48,9 +48,9 @@
 									<td><c:out value="${obra.artista}"></c:out></td>
 									<td><c:out value="${obra.tipo}"></c:out></td>
 									<td><c:out value="${obra.dataFormatada}"></c:out></td>
-									<td><a href="#" class="icon fa-pencil-square-o
+									<td><a class="icon fa-pencil-square-o href="#"
 										onclick="editar('${obra.id}','ObrasControl');return false;">  Editar</a></td>
-									<td><a href="#" class="icon fa-eraser
+									<td><a class="icon fa-eraser href="#"
 										onclick="deletar('${obra.id}','ObrasControl');return false;">  Excluir</a></td>
 								</tr>
 							</c:forEach>

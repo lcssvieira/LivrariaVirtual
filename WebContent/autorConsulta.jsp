@@ -50,9 +50,9 @@
 									<td><c:out value="${exposicao.dataInicioFormatada}"></c:out></td>
 									<td><c:out value="${exposicao.dataFimFormatada}"></c:out></td>
 									<td><c:out value="${exposicao.museu.getNome()}"></c:out></td>
-									<td><a href="#" class="icon fa-pencil-square-o
+									<td><a class="icon fa-pencil-square-o href="#"
 										onclick="editar('${exposicao.id}','ExposicaoControl');return false;">  Editar</a></td>
-									<td><a href="#" class="icon fa-eraser
+									<td><a class="icon fa-eraser href="#"
 										onclick="deletar('${exposicao.id}','ExposicaoControl');return false;">  Excluir</a></td>
 								</tr>
 							</c:forEach>
