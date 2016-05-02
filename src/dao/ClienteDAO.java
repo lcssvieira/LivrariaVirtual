@@ -9,11 +9,11 @@ import model.Cliente;
 public class ClienteDAO {
 	private static String tbName = "tb_cliente";
 	private static String tbUsuario = "tb_usuario";
-	private static String SELECT = String.format("SELECT * FROM {0}, {1} where {0}.id_usuario = {1}.id",ClienteDAO.tbName,ClienteDAO.tbUsuario);
-	private static String SELECTBYPK = String.format("SELECT * FROM {0}, {1} WHERE {0}.id=? AND {0}.id_usuario = {1}.id", ClienteDAO.tbName);
-	private static String INSERT = String.format("INSERT INTO {0} (rg, cpf, estado_civil, logradouro, cep, endereco, numero, complemento, bairro, cidade,uf,sexo,data_nascimento) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)", ClienteDAO.tbName);
-	private static String DELETE = String.format("DELETE FROM {0} where id = ?", ClienteDAO.tbName);
-	private static String UPDATE = String.format("UPDATE {0} SET rg = ?, cpf=?, estado_civil =?, logradouro=?, cep = ?, endereco =?, numero=?, complemento =? , bairro=?,cidade = ?, uf=?,sexo=?,data_nascimento =? where id = ?", ClienteDAO.tbName);
+	private static String SELECT = String.format("SELECT * FROM %1$s, %2$s where %1$s.id_usuario = %2$s.id",ClienteDAO.tbName,ClienteDAO.tbUsuario);
+	private static String SELECTBYPK = String.format("SELECT * FROM %1$s, %2$s WHERE %1$s.id=? AND %1$s.id_usuario = %2$s.id", ClienteDAO.tbName, ClienteDAO.tbUsuario);
+	private static String INSERT = String.format("INSERT INTO %1$s (rg, cpf, estado_civil, logradouro, cep, endereco, numero, complemento, bairro, cidade,uf,sexo,data_nascimento) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)", ClienteDAO.tbName);
+	private static String DELETE = String.format("DELETE FROM %1$s where id = ?", ClienteDAO.tbName);
+	private static String UPDATE = String.format("UPDATE %1$s SET rg = ?, cpf=?, estado_civil =?, logradouro=?, cep = ?, endereco =?, numero=?, complemento =? , bairro=?,cidade = ?, uf=?,sexo=?,data_nascimento =? where id = ?", ClienteDAO.tbName);
 
 	public boolean inserir(Cliente cliente) throws Exception {
 		Connection conn = null;

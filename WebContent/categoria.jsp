@@ -3,7 +3,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<title>Museu</title>
+<title>Categorias de Livro</title>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <!--[if lte IE 8]><script src="../assets/js/ie/html5shiv.js"></script><![endif]-->
@@ -27,7 +27,7 @@
 					<!-- Post -->
 					<article class="box post"> <header>
 
-					<h3>Novo Empréstimo</h3>
+					<h3>Nova Categoria de Livro</h3>
 					<c:if test="${not empty inserido}">
 						<div class="alert alert-danger" role="alert">
 							<strong>Erro! </strong>Ocorreu um erro ao inserir os dados.
@@ -37,10 +37,10 @@
 					<form method="POST" action="ServletMuseu.do">
 						<input type="hidden" name="classe" value="EmprestimoControl" /> <input
 							type="hidden" name="metodo" value="cadastrar" />
-						<c:if test="${not empty emprestimoEditar}">
+						<c:if test="${not empty categoriaEditar}">
 							<input type="hidden" name="alterar" value="true" />
 							<input type="hidden" name="id"
-								value="<c:out value="${emprestimoEditar.id}"/>" />
+								value="<c:out value="${categoriaEditar.id}"/>" />
 						</c:if>
 						<div class="row 50%">
 							<div class="6u 12u(mobile)">

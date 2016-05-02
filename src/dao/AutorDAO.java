@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import model.Autor;
 public class AutorDAO {
 	private static String tbName = "tb_autor";
-	private static String SELECT = String.format("SELECT * FROM {0}", AutorDAO.tbName);
-	private static String SELECTBYPK = String.format("SELECT * FROM {0} WHERE id=?",AutorDAO.tbName);
-	private static String INSERT = String.format("INSERT INTO {0} (nome, local_nascimento,local_falecimento, biografia, data_nascimento, data_falecimento) VALUES(?,?,?,?,?,?)",AutorDAO.tbName);
-	private static String DELETE = String.format("DELETE FROM {0} where id = ?",AutorDAO.tbName);
-	private static String UPDATE = String.format("UPDATE {0} SET nome =?, local_nascimento =?,local_falecimento =?, biografia =?, data_nascimento =?, data_falecimento =? where id = ?",AutorDAO.tbName);
+	private static String SELECT = String.format("SELECT * FROM %1$s", AutorDAO.tbName);
+	private static String SELECTBYPK = String.format("SELECT * FROM %1$s WHERE id=?",AutorDAO.tbName);
+	private static String INSERT = String.format("INSERT INTO %1$s (nome, local_nascimento,local_falecimento, biografia, data_nascimento, data_falecimento) VALUES(?,?,?,?,?,?)",AutorDAO.tbName);
+	private static String DELETE = String.format("DELETE FROM %1$s where id = ?",AutorDAO.tbName);
+	private static String UPDATE = String.format("UPDATE %1$s SET nome =?, local_nascimento =?,local_falecimento =?, biografia =?, data_nascimento =?, data_falecimento =? where id = ?",AutorDAO.tbName);
 
 	public boolean inserir(Autor autor) throws Exception {
 		Connection conn = null;

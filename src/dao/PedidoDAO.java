@@ -15,15 +15,15 @@ public class PedidoDAO {
 
 	private static String tbName ="tb_pedido";
 	private static String tbItens ="tb_itens_pedido";
-	private static String SELECT = String.format("SELECT * FROM {0}", PedidoDAO.tbName);
-	private static String SELECTBYPK =  String.format("SELECT * FROM {0} WHERE id=?", PedidoDAO.tbName);
-	private static String INSERT =  String.format("INSERT INTO {0} (id_cliente, numero, data_venda,forma_pagamento) VALUES(?,?,?,?)", PedidoDAO.tbName); 
-	private static String DELETE =  String.format("DELETE FROM {0} where id = ?", PedidoDAO.tbName);
-	private static String UPDATE =  String.format("UPDATE {0} SET id_cliente =?, numero?, data_venda = ?, forma_pagamento = ? where id = ?", PedidoDAO.tbName);
+	private static String SELECT = String.format("SELECT * FROM %1$s", PedidoDAO.tbName);
+	private static String SELECTBYPK =  String.format("SELECT * FROM %1$s WHERE id=?", PedidoDAO.tbName);
+	private static String INSERT =  String.format("INSERT INTO %1$s (id_cliente, numero, data_venda,forma_pagamento) VALUES(?,?,?,?)", PedidoDAO.tbName); 
+	private static String DELETE =  String.format("DELETE FROM %1$s where id = ?", PedidoDAO.tbName);
+	private static String UPDATE =  String.format("UPDATE %1$s SET id_cliente =?, numero?, data_venda = ?, forma_pagamento = ? where id = ?", PedidoDAO.tbName);
 	
-	private static String SELECTITENS = String.format("SELECT * FROM {0} where id_pedido = ?",PedidoDAO.tbItens);
-	private static String INSERTITEM = String.format("INSERT INTO {0} (id_pedido, id_livro, perc_desconto,quantidade) VALUES(?,?,?,?)",PedidoDAO.tbItens); 
-	private static String DELETEITENS = String.format("DELETE FROM {0} where id_pedido = ?",PedidoDAO.tbItens);
+	private static String SELECTITENS = String.format("SELECT * FROM %1$s where id_pedido = ?",PedidoDAO.tbItens);
+	private static String INSERTITEM = String.format("INSERT INTO %1$s (id_pedido, id_livro, perc_desconto,quantidade) VALUES(?,?,?,?)",PedidoDAO.tbItens); 
+	private static String DELETEITENS = String.format("DELETE FROM %1$s where id_pedido = ?",PedidoDAO.tbItens);
 	private ClienteDAO clienteDAO = new ClienteDAO();
 	private LivroDAO livroDAO = new LivroDAO();
 	

@@ -6,7 +6,7 @@
 -->
 <html>
 <head>
-<title>Museu</title>
+<title>Livraria Online - Administração</title>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
@@ -23,7 +23,7 @@
 			<section id="features" class="container">
 				<header>
 					<h2>
-						Sistema Gerenciador de <strong>Museu</strong>!
+						Sistema Gerenciador de <strong>Livaria</strong>!
 					</h2>
 				</header>
 

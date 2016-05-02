@@ -9,11 +9,11 @@ import model.CategoriaLivro;
 
 public class CategoriaLivroDAO {
 	private static String tbName = "tb_categoria_livro";
-	private static String SELECT = String.format("SELECT * FROM {0}",CategoriaLivroDAO.tbName);
-	private static String SELECTBYPK = String.format("SELECT * FROM {0} WHERE id=?", CategoriaLivroDAO.tbName);
-	private static String INSERT = String.format("INSERT INTO {0} (descricao) VALUES(?)", CategoriaLivroDAO.tbName);
-	private static String DELETE = String.format("DELETE FROM {0} where id = ?", CategoriaLivroDAO.tbName);
-	private static String UPDATE = String.format("UPDATE {0} SET descricao = ? where id = ?", CategoriaLivroDAO.tbName);
+	private static String SELECT = String.format("SELECT * FROM %1$s",CategoriaLivroDAO.tbName);
+	private static String SELECTBYPK = String.format("SELECT * FROM %1$s WHERE id=?", CategoriaLivroDAO.tbName);
+	private static String INSERT = String.format("INSERT INTO %1$s (descricao) VALUES(?)", CategoriaLivroDAO.tbName);
+	private static String DELETE = String.format("DELETE FROM %1$s where id = ?", CategoriaLivroDAO.tbName);
+	private static String UPDATE = String.format("UPDATE %1$s SET descricao = ? where id = ?", CategoriaLivroDAO.tbName);
 
 	public boolean inserir(CategoriaLivro categoria) throws Exception {
 		Connection conn = null;

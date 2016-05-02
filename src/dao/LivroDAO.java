@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-
 import model.Autor;
 import model.CategoriaLivro;
 import model.Editora;
@@ -18,19 +17,18 @@ public class LivroDAO {
 	private static String tbEditora = "tb_editora";
 	private static String tbCategoria = "tb_categoria";
 	private static String tbAutor = "tb_autor";	
-	private static String SELECTBYPK = String.format("SELECT * FROM {0} WHERE id=?",LivroDAO.tbLivro);
-	private static String INSERT = String.format("INSERT INTO {0} (id_editora, isbn,titulo,formato,sumario,resumo,data_publicacao, preco_custo,preco_venda, margem_lucro, quantidade_estoque,estoque_minimo, numero_paginas) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",LivroDAO.tbLivro);
-	private static String DELETE = String.format("DELETE FROM {0} where id = ?",LivroDAO.tbLivro);
-	private static String UPDATE = String.format("UPDATE {0} SET id_editora=?, isbn=?,titulo=?,formato=?,sumario=?,resumo=?,data_publicacao=?, preco_custo=?,preco_venda=?, margem_lucro=?, quantidade_estoque=?,estoque_minimo=?, numero_paginas =? where id = ?",LivroDAO.tbLivro);
-
-	private static String INSERTCATEGORIAS = String.format("INSERT INTO {0} (id_livro,id_categoria) VALUES(?,?)", LivroDAO.tbCategorias);
-	private static String INSERTAUTORES = String.format("INSERT INTO {0} (id_livro,id_autor) VALUES(?,?)", LivroDAO.tbAutores);
-	private static String DELETEAUTORES = String.format("DELETE FROM {0} where id_livro = ?",LivroDAO.tbAutores);
-	private static String DELETECATEGORIAS = String.format("DELETE FROM {0} where id_livro = ?",LivroDAO.tbCategorias);
-	private static String SELECTCATEGORIAS = String.format("SELECT * FROM {0} where id_livro = ?",LivroDAO.tbCategorias);
-	private static String SELECTAUTORES = String.format("SELECT * FROM {0} where id_livro = ?",LivroDAO.tbAutores);
+	private static String SELECTBYPK = String.format("SELECT * FROM %1$s WHERE id=?",LivroDAO.tbLivro);
+	private static String INSERT = String.format("INSERT INTO %1$s (id_editora, isbn,titulo,formato,sumario,resumo,data_publicacao, preco_custo,preco_venda, margem_lucro, quantidade_estoque,estoque_minimo, numero_paginas) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",LivroDAO.tbLivro);
+	private static String DELETE = String.format("DELETE FROM %1$s where id = ?",LivroDAO.tbLivro);
+	private static String UPDATE = String.format("UPDATE %1$s SET id_editora=?, isbn=?,titulo=?,formato=?,sumario=?,resumo=?,data_publicacao=?, preco_custo=?,preco_venda=?, margem_lucro=?, quantidade_estoque=?,estoque_minimo=?, numero_paginas =? where id = ?",LivroDAO.tbLivro);
+	private static String INSERTCATEGORIAS = String.format("INSERT INTO %1$s (id_livro,id_categoria) VALUES(?,?)", LivroDAO.tbCategorias);
+	private static String INSERTAUTORES = String.format("INSERT INTO %1$s (id_livro,id_autor) VALUES(?,?)", LivroDAO.tbAutores);
+	private static String DELETEAUTORES = String.format("DELETE FROM %1$s where id_livro = ?",LivroDAO.tbAutores);
+	private static String DELETECATEGORIAS = String.format("DELETE FROM %1$s where id_livro = ?",LivroDAO.tbCategorias);
+	private static String SELECTCATEGORIAS = String.format("SELECT * FROM %1$s where id_livro = ?",LivroDAO.tbCategorias);
+	private static String SELECTAUTORES = String.format("SELECT * FROM %1$s where id_livro = ?",LivroDAO.tbAutores);
 	
-	private static String SELECT = String.format("SELECT * FROM {0}",LivroDAO.tbLivro);
+	private static String SELECT = String.format("SELECT * FROM %1$s",LivroDAO.tbLivro);
 	private CategoriaLivroDAO categoriaDAO = new CategoriaLivroDAO();
 	private AutorDAO autorDAO = new AutorDAO();
 	
@@ -93,13 +91,13 @@ public class LivroDAO {
 		String statement = SELECT;
 		
 		if (filtro == LivroFiltro.titulo) 
-			statement = String.format("{0} WHERE titulo like '%{1}%'", statement, parametro);
+			statement = String.format("%1$s WHERE titulo like '%%2$s%'", statement, parametro);
 		else if (filtro == LivroFiltro.editora)
-			statement = String.format("{0}, {2} WHERE {1}.id_editora = {2}.id AND {2}.nome like '%{3}%' ", statement, tbLivro,  tbEditora, parametro);
+			statement = String.format("$1$d, %3$s WHERE $2$d.id_editora = %3$s.id AND %3$s.nome like '%%4$s%' ", statement, tbLivro,  tbEditora, parametro);
 		else if (filtro == LivroFiltro.categoria)
-			statement = String.format("{0}, {1}, {2} WHERE {1}.id = {2}.id_livro AND {2}.id_categoria = {3}.id AND {3}.descricao like '%{4}%'  ", statement, tbLivro, tbCategorias,  tbCategoria, parametro);
+			statement = String.format("%1$s, %2$s, %3$s WHERE %2$s.id = %3$s.id_livro AND %3$s.id_categoria = %4$s.id AND %4$s.descricao like '%%5$s%'  ", statement, tbLivro, tbCategorias,  tbCategoria, parametro);
 		else if (filtro == LivroFiltro.autor)
-			statement = String.format("{0}, {1}, {2} WHERE {1}.id = {2}.id_livro AND {2}.id_autor= {3}.id AND {3}.nome like '%{4}%'  ", statement, tbLivro, tbAutores,  tbAutor, parametro);
+			statement = String.format("%1$s, %2$s, %3$s WHERE %2$s.id = %3$s.id_livro AND %3$s.id_autor= %4$s.id AND %4$s.nome like '%%5$s%'  ", statement, tbLivro, tbAutores,  tbAutor, parametro);
 
 		Connection conn = DaoUtils.getConnection();
 		PreparedStatement ps = conn.prepareStatement(statement);

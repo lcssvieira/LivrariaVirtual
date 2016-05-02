@@ -9,11 +9,11 @@ import model.Editora;
 
 public class EditoraDAO {
 	private static String tbName = "tb_editora";
-	private static String SELECT = String.format("SELECT * FROM {0}",EditoraDAO.tbName);
-	private static String SELECTBYPK = String.format("SELECT * FROM {0} WHERE id = ?",EditoraDAO.tbName);
-	private static String INSERT = String.format("INSERT INTO {0} VALUES (nome,cnpj,telefones,logradouro,cep,endereco,numero,complemento,bairro,cidade,uf) VALUES (?,?,?,?,?,?,?,?,?,?,?)",EditoraDAO.tbName);
-	private static String DELETE = String.format("DELETE FROM {0} WHERE id=?",EditoraDAO.tbName);
-	private static String UPDATE = String.format("UPDATE {0} SET nome=?,cnpj=?,telefones=?,logradouro=?,cep=?,endereco=?,numero=?,complemento=?,bairro=?,cidade=?,uf=? WHERE id=?",EditoraDAO.tbName);
+	private static String SELECT = String.format("SELECT * FROM %1$s",EditoraDAO.tbName);
+	private static String SELECTBYPK = String.format("SELECT * FROM %1$s WHERE id = ?",EditoraDAO.tbName);
+	private static String INSERT = String.format("INSERT INTO %1$s VALUES (nome,cnpj,telefones,logradouro,cep,endereco,numero,complemento,bairro,cidade,uf) VALUES (?,?,?,?,?,?,?,?,?,?,?)",EditoraDAO.tbName);
+	private static String DELETE = String.format("DELETE FROM %1$s WHERE id=?",EditoraDAO.tbName);
+	private static String UPDATE = String.format("UPDATE %1$s SET nome=?,cnpj=?,telefones=?,logradouro=?,cep=?,endereco=?,numero=?,complemento=?,bairro=?,cidade=?,uf=? WHERE id=?",EditoraDAO.tbName);
 
 	public boolean inserir(Editora editora) {
 		Connection conn = null;

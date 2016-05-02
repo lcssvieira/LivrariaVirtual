@@ -8,11 +8,11 @@ import model.Usuario;
 
 public class UsuarioDAO {
 	private static String tbName = "tb_usuario";
-	private static String SELECT = String.format("SELECT * FROM {0}",UsuarioDAO.tbName);
-	private static String SELECTBYPK = String.format("SELECT * FROM {0} WHERE id=?", UsuarioDAO.tbName);
-	private static String INSERT = String.format("INSERT INTO {0} (nome, username, senha) VALUES(?,?,?)", UsuarioDAO.tbName);
-	private static String DELETE = String.format("DELETE FROM {0} where id = ?", UsuarioDAO.tbName);
-	private static String UPDATE = String.format("UPDATE {0} SET nome = ?, username=?, senha =? where id = ?", UsuarioDAO.tbName);
+	private static String SELECT = String.format("SELECT * FROM %1$s",UsuarioDAO.tbName);
+	private static String SELECTBYPK = String.format("SELECT * FROM %1$s WHERE id=?", UsuarioDAO.tbName);
+	private static String INSERT = String.format("INSERT INTO %1$s (nome, username, senha) VALUES(?,?,?)", UsuarioDAO.tbName);
+	private static String DELETE = String.format("DELETE FROM %1$s where id = ?", UsuarioDAO.tbName);
+	private static String UPDATE = String.format("UPDATE %1$s SET nome = ?, username=?, senha =? where id = ?", UsuarioDAO.tbName);
 
 	public boolean inserir(Usuario usuario) throws Exception {
 		Connection conn = null;

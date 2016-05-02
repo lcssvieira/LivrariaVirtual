@@ -3,7 +3,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<title>Museu</title>
+<title>Pedidos</title>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <!--[if lte IE 8]><script src="./assets/js/ie/html5shiv.js"></script><![endif]-->
@@ -16,6 +16,7 @@
 	<div id="page-wrapper">
 
 		<jsp:include page="menu.jsp" />
+
 		<!-- Main -->
 		<div id="main-wrapper">
 			<div id="main" class="container">
@@ -29,30 +30,25 @@
 					<table class="table table-condensed table-hover  table-striped">
 						<thead>
 							<tr>
-								<th>ID</th>
 								<th>Nome</th>
-								<th>Seção</th>
-								<th>Data início</th>
-								<th>Data fim</th>
-								<th>Museu</th>
+								<th>Nome Responsável</th>
+								<th>Fone</th>
+								<th>Fone Responsável</th>
 								<th colspan="2">Ações</th>
 							</tr>
 						</thead>
 						<tbody>
-							<!-- Loop para popular tabela de exposições -->
-							<c:forEach items="${requestScope.listaExposicoes}"
-								var="exposicao">
+							<!-- Loop para popular tabela de obras -->
+							<c:forEach items="${requestScope.listaMuseus}" var="museu">
 								<tr>
-									<td><c:out value="${exposicao.id}"></c:out></td>
-									<td><c:out value="${exposicao.nome}"></c:out></td>
-									<td><c:out value="${exposicao.secao}"></c:out></td>
-									<td><c:out value="${exposicao.dataInicioFormatada}"></c:out></td>
-									<td><c:out value="${exposicao.dataFimFormatada}"></c:out></td>
-									<td><c:out value="${exposicao.museu.getNome()}"></c:out></td>
+									<td><c:out value="${museu.nome}"></c:out></td>
+									<td><c:out value="${museu.nomeResponsavel}"></c:out></td>
+									<td><c:out value="${museu.fone}"></c:out></td>
+									<td><c:out value="${museu.foneResponsavel}"></c:out></td>
 									<td><a href="#"
-										onclick="editar('${exposicao.id}','ExposicaoControl');return false;">Editar</a></td>
+										onclick="editar('${museu.id}','MuseuControl');return false;">Editar</a></td>
 									<td><a href="#"
-										onclick="deletar('${exposicao.id}','ExposicaoControl');return false;">Excluir</a></td>
+										onclick="deletar('${museu.id}','MuseuControl');return false;">Excluir</a></td>
 								</tr>
 							</c:forEach>
 						</tbody>

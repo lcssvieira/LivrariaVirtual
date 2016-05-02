@@ -3,7 +3,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<title>Museu - Consulta de Empréstimos</title>
+<title>Clientes</title>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <!--[if lte IE 8]><script src="./assets/js/ie/html5shiv.js"></script><![endif]-->
@@ -21,7 +21,7 @@
 		<div id="main-wrapper">
 			<div id="main" class="container">
 				<div id="content">
-					<c:if test="${not empty inserido}">
+					<c:if test="${not empty adicionado}">
 						<div class="alert alert-success" role="alert">Dados salvos
 							com sucesso.</div>
 					</c:if>
@@ -30,28 +30,24 @@
 					<table class="table table-condensed table-hover  table-striped">
 						<thead>
 							<tr>
-								<th style="display:none">ID</th>
-								<th>Data do emprestimo</th>
-								<th>Data prevista p/ devolução</th>
-								<th>Obra emprestada</th>
-								<th>Museu solicitante</th>
+								<th>ID</th>
+								<th>Nome</th>
+								<th>Nascimento</th>
 								<th colspan="2">Ações</th>
 							</tr>
 						</thead>
 						<tbody>
-							<!-- Loop para popular tabela de exposições -->
-							<c:forEach items="${requestScope.listaEmprestimos}"
-								var="emprestimo">
+							<!-- Loop para popular tabela de obras -->
+							<c:forEach items="${requestScope.listaVisitantes}"
+								var="visitante">
 								<tr>
-									<td style="display:none"><c:out value="${emprestimo.id}"></c:out></td>
-									<td><c:out value="${emprestimo.dataInicioFormatada}"></c:out></td>
-									<td><c:out value="${emprestimo.dataFimFormatada}"></c:out></td>
-									<td><c:out value="${emprestimo.obra.nome}"></c:out></td>
-									<td><c:out value="${emprestimo.museu.getNome()}"></c:out></td>
+									<td><c:out value="${visitante.id}"></c:out></td>
+									<td><c:out value="${visitante.nome}"></c:out></td>
+									<td><c:out value="${visitante.dataFormatada}"></c:out></td>
 									<td><a href="#"
-										onclick="editar('${emprestimo.id}','EmprestimoControl');return false;">Editar</a></td>
+										onclick="editar('${visitante.id}','VisitanteControl');return false;">Editar</a></td>
 									<td><a href="#"
-										onclick="deletar('${emprestimo.id}','EmprestimoControl');return false;">Excluir</a></td>
+										onclick="deletar('${visitante.id}','VisitanteControl');return false;">Excluir</a></td>
 								</tr>
 							</c:forEach>
 						</tbody>
