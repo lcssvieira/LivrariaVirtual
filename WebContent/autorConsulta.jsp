@@ -26,6 +26,7 @@
 					</c:if>
 
 					<!-- Post -->
+					<h3>Consulta de Autores</h3>
 					<table class="table table-condensed table-hover  table-striped">
 						<thead>
 							<tr>

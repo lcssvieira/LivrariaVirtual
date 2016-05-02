@@ -27,6 +27,7 @@
 					</c:if>
 
 					<!-- Post -->
+					<h3>Consulta de Editoras</h3>
 					<table class="table table-condensed table-hover  table-striped">
 						<thead>
 							<tr>
