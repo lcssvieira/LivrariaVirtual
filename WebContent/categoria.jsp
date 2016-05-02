@@ -27,7 +27,7 @@
 					<!-- Post -->
 					<article class="box post"> <header>
 
-					<h3>Nova Categoria de Livro</h3>
+					<h3>Cadastro de Categoria de Livro</h3>
 					<c:if test="${not empty inserido}">
 						<div class="alert alert-danger" role="alert">
 							<strong>Erro! </strong>Ocorreu um erro ao inserir os dados.

@@ -33,7 +33,7 @@
 					<!-- Post -->
 					<article class="box post"> <header>
 
-					<h3>Manutenção de Exposição</h3>
+					<h3>Cadastro de Autor</h3>
 					<c:if test="${not empty inserido}">
 						<div class="alert alert-danger" role="alert">
 							<strong>Erro!</strong>Ocorreu um erro ao inserir os dados.
